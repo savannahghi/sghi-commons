@@ -303,6 +303,7 @@ tags
 
 ### Project template
 dist/*
+docs/api
 .pytest_cache/
 .ipython/
 .env
