@@ -43,7 +43,7 @@ autodoc_default_flags = {
     ),
 }
 
-autodoc_member_order = 'groupwise'
+autodoc_member_order = "groupwise"
 
 autoapi_python_use_implicit_namespaces = True
 
@@ -56,6 +56,11 @@ nitpicky = True
 
 nitpick_ignore = [
     ("py:class", "_CT_contra"),  # type annotation not available at runtime
+    ("py:class", "_DE"),  # type annotation only available when type checking
+    ("py:class", "_DT"),  # type annotation only available when type checking
+    ("py:class", "_P"),  # type annotation only available when type checking
+    ("py:class", "_RT"),  # type annotation only available when type checking
+    ("py:class", "TracebackType"),  # Used as type annotation. Only available when type checking
     ("py:class", "concurrent.futures._base.Executor"),  # sphinx can't find it
     ("py:class", "concurrent.futures._base.Future"),  # sphinx can't find it
     ("py:class", "sghi.disposable.decorators._D"),  # private type annotations
