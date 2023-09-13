@@ -41,6 +41,7 @@ API Reference
    :recursive:
 
      sghi.app
+     sghi.disposable
      sghi.exceptions
      sghi.typing
      sghi.utils

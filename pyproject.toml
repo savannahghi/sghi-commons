@@ -99,7 +99,10 @@ exclude_lines = [
     '@(abc\.)?abstractmethod',
 
     # Don't complain about conditional TYPE_CHECKING blocks:
-    "if TYPE_CHECKING:",
+    'if (typing\.)?TYPE_CHECKING:',
+
+    # Don't complain about overloads:
+    '@(typing\.)?overload',
 ]
 show_missing = true
 
