@@ -55,6 +55,7 @@ exclude_patterns = []
 nitpicky = True
 
 nitpick_ignore = [
+    ("py:class", "_CT_contra"),  # type annotation not available at runtime
     ("py:class", "concurrent.futures._base.Executor"),  # sphinx can't find it
     ("py:class", "concurrent.futures._base.Future"),  # sphinx can't find it
     ("py:class", "sghi.disposable.decorators._D"),  # private type annotations
@@ -72,8 +73,9 @@ nitpick_ignore = [
     ("py:class", "sghi.task.concurrent._IT"),  # private type annotations
     ("py:class", "sghi.task.concurrent._OT"),  # private type annotations
     ("py:class", "sghi.utils.checkers._Comparable"),  # private type annotations
-    ("py:class", "sghi.utils.checkers._S"),  # private type annotations
+    ("py:class", "sghi.utils.checkers._ST"),  # private type annotations
     ("py:class", "sghi.utils.checkers._T"),  # private type annotations
+    ("py:class", "sghi.typing._CT_contra"),  # private type annotations
     ("py:obj", "sghi.disposable.decorators.not_disposed._P"),  # private type annotations
     ("py:obj", "sghi.disposable.decorators.not_disposed._R"),  # private type annotations
     ("py:obj", "sghi.task.task._IT"),  # private type annotations
@@ -82,6 +84,7 @@ nitpick_ignore = [
     ("py:obj", "sghi.task.common._OT"),  # private type annotations
     ("py:obj", "sghi.task.concurrent._IT"),  # private type annotations
     ("py:obj", "sghi.task.concurrent._OT"),  # private type annotations
+    ("py:obj", "sghi.typing._CT_contra"),  # private type annotations
 ]
 
 templates_path = ["templates"]
@@ -120,6 +123,7 @@ html_theme_options = {
 
 extensions += ["sphinx.ext.intersphinx"]
 intersphinx_mapping = {
+    "peps": ("https://peps.python.org/", None),
     "python": ("https://docs.python.org/3", None),
     "pypackage": ("https://packaging.python.org/en/latest/", None),
     "importlib-resources": (

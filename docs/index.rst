@@ -42,6 +42,8 @@ API Reference
 
      sghi.app
      sghi.exceptions
+     sghi.typing
+     sghi.utils
 
 
 .. _sghi_github_py_projects: https://github.com/savannahghi/?q=&type=all&language=python&sort=
