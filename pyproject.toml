@@ -23,6 +23,7 @@ classifiers = [
     "Typing :: Typed"
 ]
 dependencies = [
+    "importlib-metadata>=6.8.0",
     "typing-extensions>=4.7",
 ]
 description = "A collection of utilities used throughout SGHI's Python projects."
