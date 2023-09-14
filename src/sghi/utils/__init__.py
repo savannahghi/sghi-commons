@@ -11,6 +11,7 @@ from .checkers import (
     ensure_not_none_nor_empty,
     ensure_predicate,
 )
+from .module_loading import import_string, import_string_as_klass
 from .others import future_succeeded, type_fqn
 
 __all__ = [
@@ -22,5 +23,7 @@ __all__ = [
     "ensure_not_none_nor_empty",
     "ensure_predicate",
     "future_succeeded",
+    "import_string",
+    "import_string_as_klass",
     "type_fqn",
 ]
