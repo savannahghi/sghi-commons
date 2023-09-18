@@ -106,10 +106,11 @@ class Disposable(AbstractContextManager, metaclass=ABCMeta):
 
         .. note::
             Unless otherwise specified, trying to use methods of a
-            ``Disposable`` instance decorated with the :func:`not_disposed`
-            decorator after this method returns should generally be considered
-            a programming error and should result in a
-            :exc:`ResourceDisposedError` being raised.
+            ``Disposable`` instance decorated with the
+            :func:`~sghi.disposable.not_disposed` decorator after this method
+            returns should generally be considered a programming error and
+            should result in a :exc:`~sghi.disposable.ResourceDisposedError`
+            being raised.
 
             This method should be idempotent allowing it to be called more
             than once; only the first call, however, should have an effect.

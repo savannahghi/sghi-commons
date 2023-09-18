@@ -60,23 +60,12 @@ nitpick_ignore = [
     ("py:class", "_DT"),  # type annotation only available when type checking
     ("py:class", "_P"),  # type annotation only available when type checking
     ("py:class", "_RT"),  # type annotation only available when type checking
+    ("py:class", "Chain[Any]"),  # Used as type annotation. Only available when type checking
     ("py:class", "TracebackType"),  # Used as type annotation. Only available when type checking
     ("py:class", "concurrent.futures._base.Executor"),  # sphinx can't find it
     ("py:class", "concurrent.futures._base.Future"),  # sphinx can't find it
-    ("py:class", "sghi.disposable.decorators._D"),  # private type annotations
-    ("py:class", "sghi.disposable.decorators._DE"),  # private type annotations
-    ("py:class", "sghi.disposable.decorators._P"),  # private type annotations
-    ("py:class", "sghi.disposable.decorators._R"),  # private type annotations
-    ("py:class", "sghi.disposable.decorators.not_disposed._D"),  # private type annotations
-    ("py:class", "sghi.disposable.decorators.not_disposed._DE"),  # private type annotations
-    ("py:class", "sghi.disposable.decorators.not_disposed._P"),  # private type annotations
-    ("py:class", "sghi.disposable.decorators.not_disposed._R"),  # private type annotations
-    ("py:class", "sghi.task.task._IT"),  # private type annotations
-    ("py:class", "sghi.task.task._OT"),  # private type annotations
-    ("py:class", "sghi.task.common._IT"),  # private type annotations
-    ("py:class", "sghi.task.common._OT"),  # private type annotations
-    ("py:class", "sghi.task.concurrent._IT"),  # private type annotations
-    ("py:class", "sghi.task.concurrent._OT"),  # private type annotations
+    ("py:class", "sghi.task._IT"),  # private type annotations
+    ("py:class", "sghi.task._OT"),  # private type annotations
     ("py:class", "sghi.utils.checkers._Comparable"),  # private type annotations
     ("py:class", "sghi.utils.checkers._ST"),  # private type annotations
     ("py:class", "sghi.utils.checkers._T"),  # private type annotations
@@ -84,12 +73,8 @@ nitpick_ignore = [
     ("py:class", "sghi.typing._CT_contra"),  # private type annotations
     ("py:obj", "sghi.disposable.decorators.not_disposed._P"),  # private type annotations
     ("py:obj", "sghi.disposable.decorators.not_disposed._R"),  # private type annotations
-    ("py:obj", "sghi.task.task._IT"),  # private type annotations
-    ("py:obj", "sghi.task.task._OT"),  # private type annotations
-    ("py:obj", "sghi.task.common._IT"),  # private type annotations
-    ("py:obj", "sghi.task.common._OT"),  # private type annotations
-    ("py:obj", "sghi.task.concurrent._IT"),  # private type annotations
-    ("py:obj", "sghi.task.concurrent._OT"),  # private type annotations
+    ("py:obj", "sghi.task._IT"),  # private type annotations
+    ("py:obj", "sghi.task._OT"),  # private type annotations
     ("py:obj", "sghi.typing._CT_contra"),  # private type annotations
 ]
 
