@@ -43,6 +43,7 @@ API Reference
      sghi.app
      sghi.disposable
      sghi.exceptions
+     sghi.task
      sghi.typing
      sghi.utils
 
