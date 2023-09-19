@@ -60,7 +60,7 @@ test = [
     "coveralls~=3.3.1",
     "factory-boy~=3.3.0",
     "packaging",
-    "pyright~=1.1.325",
+    "pyright>=1.1.325",
     "pytest~=7.4.1",
     "pytest-cov~=4.1.0",
     "pytest-forked~=1.6.0",
@@ -271,6 +271,7 @@ legacy_tox_ini = """
         test
     set_env =
         PYTHONPATH = {toxinidir}/src
+        PYRIGHT_PYTHON_FORCE_VERSION = latest
 
 
     ;If running outside Github, ensure that the the `COVERALLS_REPO_TOKEN`
