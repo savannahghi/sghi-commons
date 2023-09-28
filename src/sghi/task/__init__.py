@@ -121,7 +121,7 @@ class Task(Generic[_IT, _OT], metaclass=ABCMeta):
 
     @staticmethod
     def of_callable(source_callable: Callable[[_IT], _OT]) -> Task[_IT, _OT]:
-        """Create a :class:`Task` instance from a callable.
+        """Create a :class:`~sghi.task.Task` instance from a callable.
 
         .. note::
 
