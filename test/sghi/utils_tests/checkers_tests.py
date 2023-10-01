@@ -2,14 +2,19 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+import sghi.app
+from sghi.config import Config, ConfigProxy
 from sghi.utils import (
     ensure_greater_or_equal,
     ensure_greater_than,
+    ensure_instance_of,
     ensure_less_or_equal,
     ensure_less_than,
     ensure_not_none,
     ensure_not_none_nor_empty,
+    ensure_optional_instance_of,
     ensure_predicate,
+    type_fqn,
 )
 
 if TYPE_CHECKING:
@@ -107,6 +112,42 @@ def test_ensure_greater_than_fails_on_invalid_input() -> None:
             ensure_greater_than(value, base_value, message=message)
 
         assert exp_info.value.args[0] == message
+
+
+def test_ensure_instance_of_return_value_on_valid_input() -> None:
+    """
+    :func:`ensure_instance_of` should return the input value if the given
+    input value is an instance of the given type.
+    """
+
+    value: Config = Config.of_proxy()
+
+    assert ensure_instance_of(value, Config) is value
+    assert ensure_instance_of(value, ConfigProxy) is value
+    assert ensure_instance_of(sghi.app.conf, Config) is sghi.app.conf
+    assert ensure_instance_of(5, int) == 5
+
+
+def test_ensure_instance_of_fails_on_invalid_value() -> None:
+    """
+    :func:`ensure_instance_of` should raise :exc:`TypeError` when given an
+    input value of a different type than the specified type.
+    """
+    with pytest.raises(TypeError, match="not an instance of") as exc_info1:
+        ensure_instance_of(sghi.app.conf, dict)
+
+    assert exc_info1.value.args[0] == (
+        f"'value' is not an instance of '{type_fqn(dict)}'."
+    )
+
+    with pytest.raises(TypeError, match="Invalid value!!") as exc_info2:
+        ensure_instance_of(
+            value=Config.of_awaiting_setup(),
+            klass=ConfigProxy,
+            message="Invalid value!!",
+        )
+
+    assert exc_info2.value.args[0] == "Invalid value!!"
 
 
 def test_ensure_less_or_equal_return_value_on_valid_input() -> None:
@@ -262,6 +303,43 @@ def test_ensure_not_none_nor_empty_fails_on_invalid_input() -> None:
     assert exp_info2.value.args[0] == "Invalid."
     assert exp_info3.value.args[0] == '"value" cannot be None or empty.'
     assert exp_info4.value.args[0] == "Invalid."
+
+
+def test_ensure_optional_instance_of_return_value_on_valid_input() -> None:
+    """
+    :func:`ensure_optional_instance_of` should return the input value if the
+    given input value is ``None`` or an instance of the given type.
+    """
+
+    value: Config = Config.of_proxy()
+
+    assert ensure_optional_instance_of(None, str) is None
+    assert ensure_optional_instance_of(value, Config) is value
+    assert ensure_optional_instance_of(value, ConfigProxy) is value
+    assert ensure_optional_instance_of(sghi.app.conf, Config) is sghi.app.conf
+    assert ensure_optional_instance_of(5, int) == 5
+
+
+def test_ensure_optional_instance_of_fails_on_invalid_value() -> None:
+    """
+    :func:`ensure_optional_instance_of` should raise :exc:`TypeError` when
+    given an input value of a different type than the specified type.
+    """
+    with pytest.raises(TypeError, match="not an instance of") as exc_info1:
+        ensure_optional_instance_of(sghi.app.conf, dict)
+
+    assert exc_info1.value.args[0] == (
+        f"'value' is not an instance of '{type_fqn(dict)}' or None."
+    )
+
+    with pytest.raises(TypeError, match="Invalid value!!") as exc_info2:
+        ensure_optional_instance_of(
+            value=Config.of_awaiting_setup(),
+            klass=ConfigProxy,
+            message="Invalid value!!",
+        )
+
+    assert exc_info2.value.args[0] == "Invalid value!!"
 
 
 def test_ensure_predicate_with_successfully_predicate_evaluation() -> None:
