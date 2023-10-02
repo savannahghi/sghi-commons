@@ -2,7 +2,7 @@
 Useful validators and predicates.
 """
 from collections.abc import Callable, Sized
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from sghi.typing import Comparable
 
@@ -68,6 +68,35 @@ def ensure_greater_than(
     """
     if not value > base_value:
         raise ValueError(message)
+    return value
+
+
+def ensure_instance_of(
+        value: Any,  # noqa: ANN401
+        klass: type[_T],
+        message: str | None = None,
+) -> _T:
+    """Check that the given value is an instance of the given type.
+
+    If ``value`` is not an instance of ``klass``, then a :exc:`TypeError` is
+    raised; else ``value`` is returned as is.
+
+    :param value: The value whose type to check.
+    :param klass: The type that the value should have.
+    :param message: An optional error message to show when ``value`` is not a
+        subclass of ``klass``. Defaults to a generic error message when one
+        isn't provided.
+
+    :return: ``value`` if it is an instance of ``klass``.
+
+    :raise TypeError: If ``value`` is not an instance of ``klass``.
+    """
+    if not isinstance(value, klass):
+        from .others import type_fqn
+        _message: str = message or (
+            f"'value' is not an instance of '{type_fqn(klass)}'."
+        )
+        raise TypeError(_message)
     return value
 
 
@@ -164,6 +193,36 @@ def ensure_not_none_nor_empty(
     """
     if len(ensure_not_none(value, message=message)) == 0:
         raise ValueError(message)
+    return value
+
+
+def ensure_optional_instance_of(
+        value: Any,  # noqa: ANN401
+        klass: type[_T],
+        message: str | None = None,
+) -> _T | None:
+    """
+    Check that the given value is ``None`` or an instance of the given type.
+
+    If ``value`` is not ``None`` or an instance of ``klass``, then a
+    :exc:`TypeError` is raised; else ``value`` is returned as is.
+
+    :param value: The value whose type to check.
+    :param klass: The type that the value should have when not ``None``.
+    :param message: An optional error message to show when ``value`` is not
+        ``None`` or a subclass of ``klass``. Defaults to a generic error
+        message when one isn't provided.
+
+    :return: ``value`` if it is ``None`` or an instance of ``klass``.
+
+    :raise TypeError: If ``value`` is not ``None`` or an instance of ``klass``.
+    """
+    if not isinstance(value, type(None) | klass):
+        from .others import type_fqn
+        _message: str = message or (
+            f"'value' is not an instance of '{type_fqn(klass)}' or None."
+        )
+        raise TypeError(_message)
     return value
 
 
