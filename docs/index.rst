@@ -42,6 +42,7 @@ API Reference
 
      sghi.app
      sghi.config
+     sghi.dispatch
      sghi.disposable
      sghi.exceptions
      sghi.task

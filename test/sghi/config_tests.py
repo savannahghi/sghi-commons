@@ -270,7 +270,7 @@ class TestConfigProxy(TestCase):
 
         assert self._source_config.DB_PORT == 5432
         assert self._instance.DB_PORT == 5432
-        assert self._source_config.DB_PASSWORD == "s3c3r3PA55word!"  # noqa: S105, E501
+        assert self._source_config.DB_PASSWORD == "s3c3r3PA55word!"  # noqa: S105
         assert self._instance.DB_PASSWORD == "s3c3r3PA55word!"  # noqa: S105
 
     def test_dunder_getattr_fails_on_missing_setting(self) -> None:
