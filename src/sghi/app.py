@@ -19,6 +19,7 @@ from typing import Any, Final
 
 from .config import Config, SettingInitializer
 from .dispatch import Dispatcher
+from .registry import Registry
 
 # =============================================================================
 # GLOBAL APPLICATION/TOOL CONSTANTS
@@ -36,6 +37,20 @@ dispatcher: Final[Dispatcher] = Dispatcher.of_proxy()
     appropriate value during application setup.
 
 """
+
+
+registry: Final[Registry] = Registry.of_proxy()
+"""The main application :class:`registry<sghi.registry.Registry>`.
+
+.. admonition:: Note: To application authors
+    :class: note
+
+    This value is set to an instance of :class:`sghi.registry.RegistryProxy`-
+    enabling the default wrapped instance to be replaced with a more
+    appropriate value during application setup.
+
+"""
+
 
 conf: Final[Config] = Config.of_proxy()
 """The application configurations.

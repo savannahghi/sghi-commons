@@ -1,6 +1,7 @@
 import sghi.app
 from sghi.config import Config
 from sghi.dispatch import Dispatcher
+from sghi.registry import Registry
 
 
 def test_conf_attribute() -> None:
@@ -18,3 +19,12 @@ def test_dispatcher_attribute() -> None:
     """
 
     assert isinstance(sghi.app.dispatcher, Dispatcher)
+
+
+def test_registry_attribute() -> None:
+    """
+    :attr:`sghi.app.registry` should not be ``None`` and of type
+    :class:`Registry`.
+    """
+
+    assert isinstance(sghi.app.registry, Registry)
