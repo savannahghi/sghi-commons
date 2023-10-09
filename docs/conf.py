@@ -65,6 +65,7 @@ nitpick_ignore = [
     ("py:class", "TracebackType"),  # Used as type annotation. Only available when type checking
     ("py:class", "concurrent.futures._base.Executor"),  # sphinx can't find it
     ("py:class", "concurrent.futures._base.Future"),  # sphinx can't find it
+    ("py:class", "sghi.dispatch._ST_contra"),  # private type annotations
     ("py:class", "sghi.task._IT"),  # private type annotations
     ("py:class", "sghi.task._OT"),  # private type annotations
     ("py:class", "sghi.utils.checkers._Comparable"),  # private type annotations
@@ -72,6 +73,7 @@ nitpick_ignore = [
     ("py:class", "sghi.utils.checkers._T"),  # private type annotations
     ("py:class", "sghi.utils.module_loading._T"),  # private type annotations
     ("py:class", "sghi.typing._CT_contra"),  # private type annotations
+    ("py:obj", "sghi.dispatch._ST_contra"),  # private type annotations
     ("py:obj", "sghi.disposable.decorators.not_disposed._P"),  # private type annotations
     ("py:obj", "sghi.disposable.decorators.not_disposed._R"),  # private type annotations
     ("py:obj", "sghi.task._IT"),  # private type annotations
