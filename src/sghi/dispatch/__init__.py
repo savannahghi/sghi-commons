@@ -169,7 +169,7 @@ class Dispatcher(metaclass=ABCMeta):
         Create a :class:`DispatcherProxy` instance that wraps the given
         ``Dispatcher`` instance.
 
-        If `source_dispatcher` is not given, it defaults to a value with
+        If ``source_dispatcher`` is not given, it defaults to a value with
         similar semantics to those returned by the :meth:`Dispatcher.of`
         factory method.
 
@@ -269,7 +269,7 @@ class DispatcherProxy(Dispatcher):
         given source ``Dispatcher`` instance.
 
         :param source_dispatcher: The ``Dispatcher`` instance to wrap. This
-            MUST be an instance ``Dispatcher``.
+            MUST be an instance of ``Dispatcher``.
 
         :raise TypeError: If ``source_dispatcher`` is not an instance of
             ``Dispatcher``.

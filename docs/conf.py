@@ -62,6 +62,7 @@ nitpick_ignore = [
     ("py:class", "_P"),  # type annotation only available when type checking
     ("py:class", "_RT"),  # type annotation only available when type checking
     ("py:class", "Chain[Any]"),  # Used as type annotation. Only available when type checking
+    ("py:class", "Signal"),  # Used as type annotation. Only available when type checking
     ("py:class", "TracebackType"),  # Used as type annotation. Only available when type checking
     ("py:class", "concurrent.futures._base.Executor"),  # sphinx can't find it
     ("py:class", "concurrent.futures._base.Future"),  # sphinx can't find it
