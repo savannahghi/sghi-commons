@@ -66,7 +66,7 @@ def test_import_string_as_klass_returns_imported_object_on_valid_input() -> None
 
     assert isak("builtins:dict", Mapping) is dict
     assert isak("sghi.disposable:Disposable", Disposable) is Disposable
-    assert isak("sghi.typing:Comparable", Protocol) is Comparable
+    assert isak("sghi.typing:Comparable", Protocol) is Comparable  # pyright: ignore[reportArgumentType]
 
 
 def test_import_string_as_klass_fails_on_invalid_dotted_path() -> None:

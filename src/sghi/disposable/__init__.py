@@ -81,7 +81,6 @@ class Disposable(AbstractContextManager, metaclass=ABCMeta):
 
         :return: `False`.
         """
-        super().__exit__(exc_type, exc_val, exc_tb)
         self.dispose()
         return False
 
