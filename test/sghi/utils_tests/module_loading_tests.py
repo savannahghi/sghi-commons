@@ -14,13 +14,12 @@ def test_import_string_returns_imported_object_on_valid_input() -> None:
     :func:`import_string` should return the imported Python object when given a
     valid dotted path string.
     """
-
     assert import_string("pytest") is pytest
     assert import_string("sghi.utils:import_string") is import_string
     assert import_string("sghi.utils.others:type_fqn") is type_fqn
     assert (
-            type_fqn(import_string("importlib.metadata:EntryPoint")) ==
-            "importlib.metadata.EntryPoint"
+        type_fqn(import_string("importlib.metadata:EntryPoint"))
+        == "importlib.metadata.EntryPoint"
     )
 
 
@@ -29,7 +28,6 @@ def test_import_string_fails_on_invalid_input() -> None:
     :func:`import_string` should raise an ``ImportError`` when given an invalid
     dotted path string.
     """
-
     invalid_dotted_paths: Iterable[str] = (
         "pytestt",
         "sghi.utils.import_string",  # 'import_string' is not a module
@@ -46,7 +44,6 @@ def test_import_string_fails_on_none_or_empty_input() -> None:
     :func:`import_string` should raise a ``ValueError`` when given a ``None``
     or empty dotted string.
     """
-
     dot_path: str = None  # type: ignore
     invalid_dotted_paths: Iterable[str] = (
         "",
@@ -57,7 +54,9 @@ def test_import_string_fails_on_none_or_empty_input() -> None:
             import_string(dotted_path)
 
 
-def test_import_string_as_klass_returns_imported_object_on_valid_input() -> None:  # noqa: E501
+def test_import_string_as_klass_returns_imported_object_on_valid_input() -> (
+    None
+):
     """
     :func:`import_string_as_klass` should return the imported type when given a
     valid dotted path string.
@@ -74,7 +73,6 @@ def test_import_string_as_klass_fails_on_invalid_dotted_path() -> None:
     :func:`import_import_string_as_klass` should raise an ``ImportError`` when
     given an invalid dotted path string.
     """
-
     invalid_dotted_paths: Iterable[str] = (
         "pytestt",
         "sghi.typing:Compare",  # 'Compare' does not exist
@@ -104,7 +102,6 @@ def test_import_string_as_klass_fails_on_wrong_dotted_path_type() -> None:
     given an invalid dotted path string that doesn't refer to an object of the
     given type.
     """
-
     wrong_inputs: Iterable[tuple[str, type[Any]]] = (
         ("builtins:dict", Sequence),
         ("sghi.disposable:Disposable", Mapping),

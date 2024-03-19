@@ -28,7 +28,6 @@ def test_ensure_greater_or_equal_return_value_on_valid_input() -> None:
     :func:`ensure_greater_or_equal` should return the input value if the given
     ``value`` is greater than or equal to the given ``base_value``.
     """
-
     assert ensure_greater_or_equal(1, 0) == 1
     assert ensure_greater_or_equal(2, 2) == 2
     assert ensure_greater_or_equal(0, -1) == 0
@@ -44,7 +43,6 @@ def test_ensure_greater_or_equal_fails_on_invalid_input() -> None:
     :func:`ensure_greater_or_equal` raises ``ValueError`` when the given
     ``value`` is not greater than or equal to the given ``base_value``.
     """
-
     inputs: Iterable[tuple[Comparable, Comparable]] = (
         (0, 1),
         (-1, 0),
@@ -74,7 +72,6 @@ def test_ensure_greater_than_return_value_on_valid_input() -> None:
     :func:`ensure_greater_than` should return the input value if the given
     ``value`` is greater than the given ``base_value``.
     """
-
     assert ensure_greater_than(1, 0) == 1
     assert ensure_greater_than(0, -1) == 0
     assert ensure_greater_than(-0.0, -1.0) == 0.0
@@ -87,7 +84,6 @@ def test_ensure_greater_than_fails_on_invalid_input() -> None:
     :func:`ensure_greater than` raises ``ValueError`` when the given ``value``
     is not greater than the given ``base_value``.
     """
-
     inputs: Iterable[tuple[Comparable, Comparable]] = (
         (0, 1),
         (2, 2),
@@ -119,7 +115,6 @@ def test_ensure_instance_of_return_value_on_valid_input() -> None:
     :func:`ensure_instance_of` should return the input value if the given
     input value is an instance of the given type.
     """
-
     value: Config = Config.of_proxy()
 
     assert ensure_instance_of(value, Config) is value
@@ -155,7 +150,6 @@ def test_ensure_less_or_equal_return_value_on_valid_input() -> None:
     :func:`ensure_less_ensure_less_or_equal` should return the input value if
     the given ``value`` is less than or equal to the given ``base_value``.
     """
-
     assert ensure_less_or_equal(0, 1) == 0
     assert ensure_less_or_equal(2, 2) == 2
     assert ensure_less_or_equal(-1, 0) == -1
@@ -171,7 +165,6 @@ def test_ensure_less_or_equal_fails_on_invalid_input() -> None:
     :func:`ensure_less_ensure_less_or_equal` raises ``ValueError`` when the
     given ``value`` is not less than or equal to the given ``base_value``.
     """
-
     inputs: Iterable[tuple[Comparable, Comparable]] = (
         (1, 0),
         (0, -1),
@@ -201,7 +194,6 @@ def test_ensure_less_than_return_value_on_valid_input() -> None:
     :func:`ensure_less_than` should return the input value if the given
     ``value`` is less than the given ``base_value``.
     """
-
     assert ensure_less_than(0, 1) == 0
     assert ensure_less_than(-1, 0) == -1
     assert ensure_less_than(-1.0, -0.0) == -1.0
@@ -214,7 +206,6 @@ def test_ensure_less_than_fails_on_invalid_input() -> None:
     :func:`ensure_less_than` raises ``ValueError`` when the given ``value`` is
     not less than the given ``base_value``.
     """
-
     inputs: Iterable[tuple[Comparable, Comparable]] = (
         (1, 0),
         (2, 2),
@@ -310,7 +301,6 @@ def test_ensure_optional_instance_of_return_value_on_valid_input() -> None:
     :func:`ensure_optional_instance_of` should return the input value if the
     given input value is ``None`` or an instance of the given type.
     """
-
     value: Config = Config.of_proxy()
 
     assert ensure_optional_instance_of(None, str) is None

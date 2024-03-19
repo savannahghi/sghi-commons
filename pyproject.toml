@@ -1,8 +1,8 @@
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
-    "setuptools~=68.2.0",
-    "setuptools_scm[toml]~=7.1.0"
+    "setuptools~=69.2.0",
+    "setuptools_scm[toml]~=8.0.4"
 ]
 
 [project]
@@ -23,8 +23,8 @@ classifiers = [
     "Typing :: Typed"
 ]
 dependencies = [
-    "importlib-metadata>=6.8.0",
-    "typing-extensions>=4.7",
+    "importlib-metadata>=7.0.2",
+    "typing-extensions>=4.10.0",
 ]
 description = "A collection of utilities used throughout SGHI's Python projects."
 dynamic = ["version"]
@@ -36,22 +36,22 @@ maintainers = [
 ]
 name = "sghi-commons"
 readme = "README.md"
-requires-python = ">=3.10" # Support Python 3.10+.
+requires-python = ">=3.11" # Support Python 3.11+.
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit~=3.4.0",
+    "pre-commit~=3.6.2",
 ]
 
 docs = [
-    "furo==2023.8.19",
+    "furo==2024.1.29",
     "jaraco.packaging~=9.4.0",
     "rst.linker~=2.4.0",
-    "Sphinx~=7.2.5",
+    "Sphinx~=7.2.6",
     "sphinx-favicon~=1.0.1",
     "sphinx-hoverxref~=1.3.0",
     "sphinx-inline-tabs~=2023.4.21",
-    "sphinx-lint~=0.6.8",
+    "sphinx-lint~=0.9.1",
     "sphinx-notfound-page~=1.0.0",
 ]
 
@@ -60,16 +60,15 @@ test = [
     "coveralls~=3.3.1",
     "factory-boy~=3.3.0",
     "packaging",
-    "pyright>=1.1.325",
-    "pytest~=7.4.1",
+    "pyright>=1.1.354",
+    "pytest~=8.1.1",
     "pytest-cov~=4.1.0",
     "pytest-forked~=1.6.0",
-    "pytest-sugar~=0.9.7",
-    "pytest-xdist~=3.3.1",
-    "ruff~=0.0.292",
-    "tomli~=2.0.1",
-    "tox~=4.11.1",
-    "tox-gh-actions~=3.1.3",
+    "pytest-sugar~=1.0.0",
+    "pytest-xdist~=3.5.0",
+    "ruff~=0.3.3",
+    "tox~=4.14.1",
+    "tox-gh-actions~=3.2.0",
 ]
 
 [project.urls]
@@ -80,7 +79,7 @@ repository = "https://github.com/savannahghi/sghi-commons.git"
 
 [tool.black]
 line-length = 79
-target-version = ["py310"]
+target-version = ["py311"]
 
 [tool.coverage.html]
 directory = "coverage"
@@ -110,7 +109,6 @@ show_missing = true
 [tool.coverage.run]
 branch = true
 omit = [".tox/*", "docs/*", "test/*"]
-# include = ["src/**/*.py"]
 
 [tool.isort]
 extend_skip = "docs"
@@ -153,7 +151,7 @@ strictSetInference = true
 typeCheckingMode = "basic"
 
 [tool.pytest.ini_options]
-addopts = "--cov=sghi --cov-fail-under=100 --cov-report=html --cov-report=term-missing -n auto --junitxml='junitxml_report/report.xml' -vv --durations=10 --cache-clear"
+addopts = "--cov=src/sghi --cov-fail-under=100 --cov-report=html --cov-report=term-missing -n auto --junitxml='junitxml_report/report.xml' -vv --durations=10 --cache-clear"
 console_output_style = "progress"
 log_cli = 1
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
@@ -181,15 +179,29 @@ exclude = [
     "node_modules",
     "venv",
 ]
+line-length = 79
+src = ["src", "test"]
+target-version = "py311"
+
+[tool.ruff.format]
+docstring-code-format = true
+indent-style = "space"
+quote-style = "double"
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint]
 ignore = [
     "ANN002",
     "ANN003",
     "ANN101",
     "ANN102",
     "ANN204",
-    "S101"
+    "COM812",
+    "D203",
+    "D213",
+    "ISC001",
+    "S101",
 ]
-line-length = 79
 select = [
     "A",   # flake8-builtins
     "ANN", # flake8-annotations
@@ -222,17 +234,15 @@ select = [
     "W",   # pycodestyle Warning
     "YTT", # flake8-2020
 ]
-src = ["src", "test"]
-target-version = "py310"
 
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 inline-quotes = "double"
 docstring-quotes = "double"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["src", "test"]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 10
 
 [tool.setuptools]
@@ -248,7 +258,7 @@ root = "."
 [tool.tox]
 legacy_tox_ini = """
     [tox]
-    env_list = {py310, py311}, coveralls, docs, package
+    env_list = {py311, py312}, coveralls, docs, package
     isolated_build = true
     no_package = false
     requires =
@@ -258,13 +268,14 @@ legacy_tox_ini = """
 
     [gh-actions]
     python =
-        3.10: py310
-        3.11: py311, coveralls, docs, package
+        3.11: py311
+        3.12: py312, coveralls, docs, package
 
 
     [testenv]
     commands =
-        ruff .
+        ruff check .
+        ruff format --check .
         pyright .
         coverage erase
         pytest {posargs:.}

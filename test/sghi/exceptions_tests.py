@@ -8,7 +8,6 @@ class TestSGHIError(TestCase):
 
     def test_message_prop_return_value(self) -> None:
         """Ensure the ``message`` property returns the expected value."""
-
         error1 = SGHIError(message="Fatal error.")
         error2 = SGHIError()
 
@@ -17,7 +16,6 @@ class TestSGHIError(TestCase):
 
     def test_str_representation(self) -> None:
         """Ensure the string representation of an ``SGHIError`` is correct."""
-
         error1 = SGHIError(message="Fatal error :(")
         error2 = SGHIError()
 

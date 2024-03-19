@@ -17,8 +17,7 @@ class SGHIError(Exception):
 
     @property
     def message(self) -> str | None:
-        """
-        Return the error message passed to this exception at initialization
+        """Return the error message passed to this exception at initialization
         or ``None`` if one was not given.
 
         :return: The error message passed to this exception at initialization

@@ -10,13 +10,11 @@ from sghi.disposable import Disposable, ResourceDisposedError, not_disposed
 
 
 class _SomeItemDisposedError(ResourceDisposedError):
-
     def __init__(self, msg: str = "SomeDisposableItem is already disposed"):
         super().__init__(message=msg)
 
 
 class _SomeDisposableItem(Disposable):
-
     __slots__ = ("_is_disposed",)
 
     def __init__(self) -> None:
@@ -31,8 +29,7 @@ class _SomeDisposableItem(Disposable):
         self._is_disposed = True
 
     @not_disposed
-    def use_resources1(self) -> None:
-        ...
+    def use_resources1(self) -> None: ...
 
     @not_disposed(exc_factory=_SomeItemDisposedError)
     def use_resources2(self) -> str:
@@ -48,12 +45,10 @@ class TestDisposable(TestCase):
     """Tests for the :class:`Disposable` mixin."""
 
     def test_object_is_disposed_on_context_manager_exit(self) -> None:
-        """
-        As per the default implementation of the :class:`Disposable` mixin ,
+        """As per the default implementation of the :class:`Disposable` mixin ,
         a ``Disposable`` object's ``dispose()`` method should be invoked when
         exiting a context manager.
         """
-
         with _SomeDisposableItem() as disposable:
             # Resource should not be disposed at this time
             assert not disposable.is_disposed
@@ -65,8 +60,7 @@ class TestNotDisposedDecorator(TestCase):
     """Tests for the :func:`not_disposed` decorator."""
 
     def test_decorated_methods_return_normally_when_not_disposed(self) -> None:
-        """
-        Methods decorated using the ``not_disposed`` decorator should return
+        """Methods decorated using the ``not_disposed`` decorator should return
         normally, i.e., without raising :exc:`ResourceDisposedError` if their
         bound ``Disposable`` object is yet to be disposed.
         """
@@ -82,14 +76,14 @@ class TestNotDisposedDecorator(TestCase):
 
         assert disposable.is_disposed
 
-    def test_decorated_methods_raise_expected_errors_when_disposed(self) -> None:  # noqa: E501
-        """
-        Methods decorated using the ``not_disposed`` decorator should raise
+    def test_decorated_methods_raise_expected_errors_when_disposed(
+        self,
+    ) -> None:
+        """Methods decorated using the ``not_disposed`` decorator should raise
         :exc:`ResourceDisposedError` or it's derivatives (depending on whether
         the ``exc_factory`` is provided) when invoked after their bound
         ``Disposable`` object is disposed.
         """
-
         disposable: _SomeDisposableItem = _SomeDisposableItem()
         disposable.dispose()
 
@@ -103,4 +97,6 @@ class TestNotDisposedDecorator(TestCase):
         assert exc_info1.type is ResourceDisposedError
         assert exc_info1.value.message == "Resource already disposed."
         assert exc_info2.type is _SomeItemDisposedError
-        assert exc_info2.value.message == "SomeDisposableItem is already disposed"  # noqa: E501
+        assert (
+            exc_info2.value.message == "SomeDisposableItem is already disposed"
+        )
