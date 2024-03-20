@@ -9,6 +9,7 @@ from sghi.typing import Comparable
 # TYPES
 # =============================================================================
 
+_CT = TypeVar("_CT", bound=Comparable)
 _ST = TypeVar("_ST", bound=Sized)
 _T = TypeVar("_T")
 
@@ -19,10 +20,10 @@ _T = TypeVar("_T")
 
 
 def ensure_greater_or_equal(
-    value: Comparable,
+    value: _CT,
     base_value: Comparable,
     message: str = "'value' must be greater than or equal to 'base_value'.",
-) -> Comparable:
+) -> _CT:
     """Check that the given value is greater that or equal to the given base
     value.
 
@@ -45,10 +46,10 @@ def ensure_greater_or_equal(
 
 
 def ensure_greater_than(
-    value: Comparable,
+    value: _CT,
     base_value: Comparable,
     message: str = "'value' must be greater than 'base_value'.",
-) -> Comparable:
+) -> _CT:
     """Check that the given value is greater that the given base value.
 
     If ``value`` is less than or equal to the given ``base_value``, then a
@@ -100,10 +101,10 @@ def ensure_instance_of(
 
 
 def ensure_less_or_equal(
-    value: Comparable,
+    value: _CT,
     base_value: Comparable,
     message: str = "'value' must be less than or equal to 'base_value'.",
-) -> Comparable:
+) -> _CT:
     """Check that the given value is less than or equal the given base value.
 
     If ``value`` is greater than the given ``base_value``, then a
@@ -125,10 +126,10 @@ def ensure_less_or_equal(
 
 
 def ensure_less_than(
-    value: Comparable,
+    value: _CT,
     base_value: Comparable,
     message: str = "'value' must be less than 'base_value'.",
-) -> Comparable:
+) -> _CT:
     """Check that the given value is less that the given base value.
 
     If ``value`` is greater than or equal to the given ``base_value``; then a
