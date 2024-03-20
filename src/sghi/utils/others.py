@@ -1,4 +1,5 @@
 """Other useful utilities."""
+
 from collections.abc import Callable
 from concurrent.futures import Future
 from typing import Any

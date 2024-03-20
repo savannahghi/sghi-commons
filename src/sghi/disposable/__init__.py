@@ -1,6 +1,5 @@
-"""
-Resource disposal mixin, checks and other helpers.
-"""
+"""Resource disposal mixin, checks and other helpers."""
+
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
@@ -35,8 +34,7 @@ class ResourceDisposedError(SGHIError):
     """Indicates that a :class:`Disposable` item has already been disposed."""
 
     def __init__(self, message: str | None = "Resource already disposed."):
-        """
-        Initialize a new instance of `ResourceDisposedError`.
+        """Initialize a new instance of `ResourceDisposedError`.
 
         :param message: Optional custom error message. If not provided, a
             default message indicating that the resource is already disposed
@@ -63,7 +61,7 @@ class Disposable(AbstractContextManager, metaclass=ABCMeta):
 
     __slots__ = ()
 
-    def __exit__(
+    def __exit__(  # pyright: ignore[reportMissingSuperCall]
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
@@ -87,8 +85,7 @@ class Disposable(AbstractContextManager, metaclass=ABCMeta):
     @property
     @abstractmethod
     def is_disposed(self) -> bool:
-        """
-        Return ``True`` if this object has already been disposed, ``False``
+        """Return ``True`` if this object has already been disposed, ``False``
         otherwise.
 
         :return: ``True`` if this object has been disposed, ``False``
@@ -129,8 +126,7 @@ def not_disposed(
     f: Callable[Concatenate[_DT, _P], _RT],
     *,
     exc_factory: Callable[[], _DE] = ResourceDisposedError,
-) -> Callable[Concatenate[_DT, _P], _RT]:
-    ...
+) -> Callable[Concatenate[_DT, _P], _RT]: ...
 
 
 @overload
@@ -141,18 +137,20 @@ def not_disposed(
 ) -> Callable[
     [Callable[Concatenate[_DT, _P], _RT]],
     Callable[Concatenate[_DT, _P], _RT],
-]:
-    ...
+]: ...
 
 
 def not_disposed(
     f: Callable[Concatenate[_DT, _P], _RT] | None = None,
     *,
     exc_factory: Callable[[], _DE] = ResourceDisposedError,
-) -> Callable[Concatenate[_DT, _P], _RT] | Callable[
-    [Callable[Concatenate[_DT, _P], _RT]],
-    Callable[Concatenate[_DT, _P], _RT],
-]:
+) -> (
+    Callable[Concatenate[_DT, _P], _RT]
+    | Callable[
+        [Callable[Concatenate[_DT, _P], _RT]],
+        Callable[Concatenate[_DT, _P], _RT],
+    ]
+):
     """Decorate a function with the resource disposal check.
 
     This decorator ensures a :class:`Disposable` item has not been disposed. If
@@ -175,10 +173,10 @@ def not_disposed(
 
     :return: The decorated function.
     """
+
     def wrap(
         _f: Callable[Concatenate[_DT, _P], _RT],
     ) -> Callable[Concatenate[_DT, _P], _RT]:
-
         @wraps(_f)
         def wrapper(
             disposable: _DT,

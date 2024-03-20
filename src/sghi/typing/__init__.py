@@ -1,14 +1,14 @@
-"""
-Useful typings for use with type annotations as defined by
+"""Useful typings for use with type annotations as defined by
 :doc:`PEP 484<peps:pep-0484>` and other subsequent related PEPs.
 """
+
 from __future__ import annotations
 
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Protocol, TypeVar, runtime_checkable
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
 # =============================================================================
 # TYPES
@@ -75,7 +75,7 @@ class Comparable(Protocol[_CT_contra]):
 
         :return: ``True`` if ``self > other``, ``False`` otherwise.
         """
-        return not(self < other or self == other)
+        return not (self < other or self == other)
 
     @abstractmethod
     def __le__(self: Self, other: _CT_contra, /) -> bool:

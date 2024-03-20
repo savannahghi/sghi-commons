@@ -7,11 +7,9 @@ from sghi.utils import future_succeeded, type_fqn
 
 
 def test_future_succeeded_fails_on_none_input() -> None:
-    """
-    :func:`future_succeeded` should raise a ``ValueError`` when given a
+    """:func:`future_succeeded` should raise a ``ValueError`` when given a
     ``None`` as it's input.
     """
-
     with pytest.raises(ValueError, match="MUST not be None") as exc_info:
         future_succeeded(None)  # type: ignore
 
@@ -19,8 +17,7 @@ def test_future_succeeded_fails_on_none_input() -> None:
 
 
 def test_future_succeeded_return_value_when_given_cancelled_futures() -> None:
-    """
-    :func:`future_succeeded` should return ``False`` when given a canceled
+    """:func:`future_succeeded` should return ``False`` when given a canceled
     ``Future`` as it's input.
     """
     future: Future[int] = Future()
@@ -30,9 +27,8 @@ def test_future_succeeded_return_value_when_given_cancelled_futures() -> None:
 
 
 def test_future_succeeded_return_value_when_given_failed_futures() -> None:
-    """
-    :func:`future_succeeded` should return ``False`` when given a ``Future``
-     whose callee raised an exception as it's input.
+    """:func:`future_succeeded` should return ``False`` when given a ``Future``
+    whose callee raised an exception as it's input.
     """
     future: Future[int] = Future()
     future.set_exception(ValueError(":("))
@@ -42,9 +38,8 @@ def test_future_succeeded_return_value_when_given_failed_futures() -> None:
 
 
 def test_future_succeeded_return_value_when_given_successful_futures() -> None:
-    """
-    :func:`future_succeeded` should return ``True`` when given a ``Future``
-     that completed without any errors as it's input.
+    """:func:`future_succeeded` should return ``True`` when given a ``Future``
+    that completed without any errors as it's input.
     """
     future: Future[int] = Future()
     future.set_result(10)
@@ -54,19 +49,20 @@ def test_future_succeeded_return_value_when_given_successful_futures() -> None:
 
 
 def test_type_fqn_return_value_on_first_party_types() -> None:
-    """
-    :func:`type_fqn` should return the correct full qualified name when
+    """:func:`type_fqn` should return the correct full qualified name when
     given a first party (part of the current project) type or function.
     """
     assert type_fqn(Disposable) == "sghi.disposable.Disposable"
-    assert type_fqn(ResourceDisposedError) == "sghi.disposable.ResourceDisposedError"  # noqa: E501
+    assert (
+        type_fqn(ResourceDisposedError)
+        == "sghi.disposable.ResourceDisposedError"
+    )
     assert type_fqn(not_disposed) == "sghi.disposable.not_disposed"
     assert type_fqn(type_fqn) == "sghi.utils.others.type_fqn"
 
 
 def test_type_fqn_return_value_on_standard_lib_types() -> None:
-    """
-    :func:`type_fqn` should return the correct full qualified name when
+    """:func:`type_fqn` should return the correct full qualified name when
     given a standard library type or function.
     """
     assert type_fqn(str) == "builtins.str"
@@ -76,11 +72,9 @@ def test_type_fqn_return_value_on_standard_lib_types() -> None:
 
 
 def test_type_fqn_return_value_on_third_party_types() -> None:
-    """
-    :func:`type_fqn` should return the correct full qualified name when
+    """:func:`type_fqn` should return the correct full qualified name when
     given a third party (third party library) type or function.
     """
-
     # FIXME: This might break on upgrade of pytest
     assert type_fqn(pytest.approx) == "_pytest.python_api.approx"
     assert type_fqn(pytest.importorskip) == "_pytest.outcomes.importorskip"
@@ -88,11 +82,9 @@ def test_type_fqn_return_value_on_third_party_types() -> None:
 
 
 def test_type_fqn_fails_on_none_input() -> None:
-    """
-    :func:`type_fqn` should raise a ``ValueError`` when given a ``None`` as
+    """:func:`type_fqn` should raise a ``ValueError`` when given a ``None`` as
     it's input.
     """
-
     with pytest.raises(ValueError, match="MUST not be None") as exc_info:
         type_fqn(None)  # type: ignore
 

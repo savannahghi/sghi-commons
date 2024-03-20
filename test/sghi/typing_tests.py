@@ -7,7 +7,7 @@ from sghi.typing import Comparable
 from sghi.utils.checkers import ensure_not_none
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
 # =============================================================================
 # COMPARABLE TEST IMPLEMENTATIONS
@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 
 
 class _SimpleComparable(Comparable["_SimpleComparable"]):
-
     __slots__ = ("_value",)
 
     def __init__(self, value: int) -> None:
@@ -54,8 +53,7 @@ class TestComparable(TestCase):
         self._six2: Comparable = _SimpleComparable.of(6)
 
     def test_greater_or_equal_return_value(self) -> None:
-        """
-        The return value of the default implementation of
+        """The return value of the default implementation of
         :meth:`Comparable.__ge__` should return ``True`` when ``a >= b``.
         """
         assert self._five >= self._four
@@ -67,8 +65,7 @@ class TestComparable(TestCase):
         assert not self._five >= self._six1
 
     def test_greater_than_return_value(self) -> None:
-        """
-        The return value of the default implementation of
+        """The return value of the default implementation of
         :meth:`Comparable.__gt__` should return ``True`` when ``a > b``.
         """
         assert self._five > self._four
@@ -80,8 +77,7 @@ class TestComparable(TestCase):
         assert not self._six1 > self._six2
 
     def test_not_equal_return_value(self) -> None:
-        """
-        The return value of the default implementation of
+        """The return value of the default implementation of
         :meth:`Comparable.__ne__` should return ``True`` when ``a != b``.
         """
         assert self._five != self._four

@@ -26,12 +26,10 @@ class TestConsume(TestCase):
     """Tests for the :class:`consume` ``Task``."""
 
     def test_and_then_method_returns_expected_value(self) -> None:
-        """
-        :meth:`consume.and_then` method should return a new instance of
+        """:meth:`consume.and_then` method should return a new instance of
         :class:`consume` that composes both the action of the current
         ``consume`` instance and the new action.
         """
-
         collection1: list[int] = []
         collection2: set[int] = set()
 
@@ -84,12 +82,13 @@ class TestConsume(TestCase):
         assert results[2] == value
         assert value == 30  # value should not have changed
 
-    def test_different_and_then_method_invocation_styles_return_same_value(self) -> None:  # noqa: E501
+    def test_different_and_then_method_invocation_styles_return_same_value(
+        self,
+    ) -> None:
         """
         :meth:`consume.execute` should return the same value regardless of how
         it was invoked.
         """
-
         collection1: list[int] = []
         collection2: set[int] = set()
         collection3: list[int] = []
@@ -117,12 +116,13 @@ class TestConsume(TestCase):
         assert len(collection1) == len(collection2) == 3
         assert len(collection3) == len(collection4) == 3
 
-    def test_different_execute_invocation_styles_return_same_value(self) -> None:  # noqa: E501
+    def test_different_execute_invocation_styles_return_same_value(
+        self,
+    ) -> None:
         """
         :meth:`consume.execute` should return the same value regardless of how
         it was invoked.
         """
-
         results1: list[int] = []
         collector1: consume[int] = consume(accept=results1.append)
         results2: list[int] = []
@@ -160,7 +160,6 @@ class TestChain(TestCase):
         :meth:`chain.execute` method should raise a :exc:`ValueError` when
         invoked with a ``None`` argument.
         """
-
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
             self._chain_of_10(None)  # type: ignore
 
@@ -171,31 +170,31 @@ class TestChain(TestCase):
         :meth:`chain.execute` method should return a new :class:`chain`
         instance with the new computed value.
         """
-
         instance: chain[int]
-        instance = self._chain_of_10\
-            .execute(self._multiply_by_2)\
-            .execute(self._add_30)
+        instance = self._chain_of_10.execute(self._multiply_by_2).execute(
+            self._add_30
+        )
 
         assert isinstance(self._chain_of_10.execute(self._add_30), chain)
         assert self._chain_of_10.execute(self._multiply_by_2).value == 20
         assert self._chain_of_10.execute(self._add_30).value == 40
         assert instance.value == 50
 
-    def test_different_execute_invocation_styles_return_same_value(self) -> None:  # noqa: E501
+    def test_different_execute_invocation_styles_return_same_value(
+        self,
+    ) -> None:
         """
         :meth:`chain.execute` should return the same value regardless of how
         it was invoked.
         """
-
         instance1: chain[int]
         instance2: chain[int]
         instance3: chain[int]
 
         # Style 1, explicit invocation
-        instance1 = self._chain_of_10\
-            .execute(self._multiply_by_2)\
-            .execute(self._add_30)
+        instance1 = self._chain_of_10.execute(self._multiply_by_2).execute(
+            self._add_30
+        )
         # Style 2, invoke as callable
         instance2 = self._chain_of_10(self._multiply_by_2)(self._add_30)
         # Style 3, using the plus operator
@@ -208,7 +207,6 @@ class TestChain(TestCase):
         :attr:`chain.value` should return the wrapped value of the current
         chain instance.
         """
-
         assert self._chain_of_10.value == 10
         assert self._chain_of_10(self._multiply_by_2).value == 20
         assert self._chain_of_10(self._add_30).value == 40
@@ -220,20 +218,20 @@ class TestConcurrentExecutor(TestCase):
     def setUp(self) -> None:
         super().setUp()
         self._longer_io_tasks: Sequence[Task[float, float]] = tuple(
-            Task.of_callable(self._do_longer_io_bound_task)
-            for _ in range(3)
+            Task.of_callable(self._do_longer_io_bound_task) for _ in range(3)
         )
         self._short_io_tasks: Sequence[Task[float, float]] = tuple(
-            Task.of_callable(self._do_io_bound_task)
-            for _ in range(5)
+            Task.of_callable(self._do_io_bound_task) for _ in range(5)
         )
         self._blocking_executor: ConcurrentExecutor[float, float]
         self._blocking_executor = ConcurrentExecutor(
-            *self._longer_io_tasks, *self._short_io_tasks,
+            *self._longer_io_tasks,
+            *self._short_io_tasks,
         )
         self._non_blocking_executor: ConcurrentExecutor[float, float]
         self._non_blocking_executor = ConcurrentExecutor(
-            *self._longer_io_tasks, *self._short_io_tasks,
+            *self._longer_io_tasks,
+            *self._short_io_tasks,
             wait_for_completion=False,
         )
 
@@ -269,7 +267,6 @@ class TestConcurrentExecutor(TestCase):
         :meth:`ConcurrentExecutor.__enter__` should warn the user. This is
         most likely erroneous API usage.
         """
-
         with pytest.warns(UserWarning, match="is discouraged"):  # noqa: SIM117
             with self._non_blocking_executor:
                 ...
@@ -351,7 +348,6 @@ class TestConcurrentExecutor(TestCase):
         :meth:`ConcurrentExecutor.dispose` should result in the
         :attr:`ConcurrentExecutor.is_disposed` property returning ``True``.
         """
-
         assert not self._blocking_executor.is_disposed
         assert not self._non_blocking_executor.is_disposed
 
@@ -400,7 +396,6 @@ class TestPipe(TestCase):
         :meth:`pipe.execute` should return the value of applying it's input
         value to all it's tasks sequentially.
         """
-
         assert self._instance(0) == "5000"
         assert self._instance(500) == "10000"
         assert self._instance(-500) == "0"
@@ -418,7 +413,6 @@ class TestPipe(TestCase):
         :attr:`pipe.tasks` should return the ``Sequence`` of tasks that
         comprise the ``pipe``.
         """
-
         assert len(self._instance.tasks) == 7
         assert isinstance(self._instance.tasks, Sequence)
         assert isinstance(self._instance.tasks[0], Task)
@@ -451,7 +445,6 @@ class TestTask(TestCase):
         :meth:`Task.of_callable` should return a new ``Task`` instance wrapping
         the given callable.
         """
-
         add_100: Callable[[int], int] = partial(operator.add, 100)
         multiply_by_10: Callable[[int], int] = partial(operator.mul, 10)
 
