@@ -1,3 +1,10 @@
+## [1.0.1-dev.1](https://github.com/savannahghi/sghi-commons/compare/v1.0.0...v1.0.1-dev.1) (2024-03-20)
+
+
+### Dependency Updates
+
+* **deps:** add py3.12 support and drop py3.10 ([#13](https://github.com/savannahghi/sghi-commons/issues/13)) ([a763136](https://github.com/savannahghi/sghi-commons/commit/a763136074b61fa7822696ef657b589a4f448b42))
+
 ## [1.0.0](https://github.com/savannahghi/sghi-commons/compare/...v1.0.0) (2024-03-20)
 
 
