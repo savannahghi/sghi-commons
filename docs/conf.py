@@ -70,6 +70,7 @@ nitpick_ignore = [
     ("py:class", "sghi.task._IT"),  # private type annotations
     ("py:class", "sghi.task._OT"),  # private type annotations
     ("py:class", "sghi.utils.checkers._Comparable"),  # private type annotations
+    ("py:class", "sghi.utils.checkers._CT"),  # private type annotations
     ("py:class", "sghi.utils.checkers._ST"),  # private type annotations
     ("py:class", "sghi.utils.checkers._T"),  # private type annotations
     ("py:class", "sghi.utils.module_loading._T"),  # private type annotations
