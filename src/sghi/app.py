@@ -1,5 +1,4 @@
-"""
-Global state definitions for SGHI applications.
+"""Global state definitions for SGHI applications.
 
 This module defines global properties important to an application. For all
 intents and purposes, these properties should be treated and thought of as
@@ -14,6 +13,7 @@ Applications should provide a valid implementation and monkey-patch it before
 first use. Whether multiple calls to the ``setup`` should be allowed is not
 defined and is left to the application implementors to decide.
 """
+
 from collections.abc import Mapping, Sequence
 from typing import Any, Final
 

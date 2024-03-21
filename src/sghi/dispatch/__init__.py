@@ -1,8 +1,8 @@
-"""
-Multiple-producer-multiple-accept signal-dispatching *heavily* inspired by
+"""Multiple-producer-multiple-accept signal-dispatching *heavily* inspired by
 `PyDispatcher <https://grass.osgeo.org/grass83/manuals/libpython/pydispatch.html>`_
 and :doc:`Django dispatch<django:topics/signals>`
 """
+
 from __future__ import annotations
 
 import logging
@@ -61,8 +61,8 @@ class Signal(metaclass=ABCMeta):
 
 
 class Dispatcher(metaclass=ABCMeta):
-    """
-    An abstract class defining the interface for a :class:`Signal` dispatcher.
+    """An abstract class defining the interface for a :class:`Signal`
+    dispatcher.
 
     ``Signal`` dispatchers are responsible for connecting and disconnecting
     :class:`receivers<Receiver>` to signals of interest, as well as sending
@@ -85,15 +85,14 @@ class Dispatcher(metaclass=ABCMeta):
 
     @abstractmethod
     def connect(
-            self,
-            signal_type: type[_ST_contra],
-            receiver: Receiver[_ST_contra],
-            *,
-            weak: bool = True,
+        self,
+        signal_type: type[_ST_contra],
+        receiver: Receiver[_ST_contra],
+        *,
+        weak: bool = True,
     ) -> None:
-        """
-        Register a :class:`receiver<Receiver>` to be notified of occurrences of
-        the specific :class:`signal type<Signal>`.
+        """Register a :class:`receiver<Receiver>` to be notified of occurrences
+        of the specific :class:`signal type<Signal>`.
 
         :param signal_type: The type of ``Signal`` to connect the receiver to.
         :param receiver: The ``Receiver`` function to connect.
@@ -106,12 +105,11 @@ class Dispatcher(metaclass=ABCMeta):
 
     @abstractmethod
     def disconnect(
-            self,
-            signal_type: type[_ST_contra],
-            receiver: Receiver[_ST_contra],
+        self,
+        signal_type: type[_ST_contra],
+        receiver: Receiver[_ST_contra],
     ) -> None:
-        """
-        Detach a :class:`Receiver` function from a specific :class:`Signal`
+        """Detach a :class:`Receiver` function from a specific :class:`Signal`
         type.
 
         .. admonition:: **To Implementors**
@@ -131,8 +129,7 @@ class Dispatcher(metaclass=ABCMeta):
 
     @abstractmethod
     def send(self, signal: Signal, robust: bool = True) -> None:
-        """
-        Send a :class:`Signal` to all :class:`receivers<Receiver>`
+        """Send a :class:`Signal` to all :class:`receivers<Receiver>`
         connected/registered to receive signals of the given signal type.
 
         If robust is set to ``False`` and a ``Receiver`` raises an error, the
@@ -163,10 +160,9 @@ class Dispatcher(metaclass=ABCMeta):
 
     @staticmethod
     def of_proxy(
-            source_dispatcher: Dispatcher | None = None,
+        source_dispatcher: Dispatcher | None = None,
     ) -> DispatcherProxy:
-        """
-        Create a :class:`DispatcherProxy` instance that wraps the given
+        """Create a :class:`DispatcherProxy` instance that wraps the given
         ``Dispatcher`` instance.
 
         If ``source_dispatcher`` is not given, it defaults to a value with
@@ -190,8 +186,7 @@ class Dispatcher(metaclass=ABCMeta):
 
 
 class connect(Generic[_ST_contra]):  # noqa :N801
-    """
-    A decorator for registering :class:`receivers<Receiver>` to be notified
+    """A decorator for registering :class:`receivers<Receiver>` to be notified
     when :class:`signals<Signal>` occur.
 
     This decorator simplifies the process of connecting a receiver function to
@@ -203,11 +198,11 @@ class connect(Generic[_ST_contra]):  # noqa :N801
     __slots__ = ("_signal_type", "_dispatcher", "_weak")
 
     def __init__(
-            self,
-            signal_type: type[_ST_contra],
-            *,
-            dispatcher: Dispatcher | None = None,
-            weak: bool = True,
+        self,
+        signal_type: type[_ST_contra],
+        *,
+        dispatcher: Dispatcher | None = None,
+        weak: bool = True,
     ) -> None:
         """Initialize a new instance of ``connect`` decorator.
 
@@ -223,15 +218,18 @@ class connect(Generic[_ST_contra]):  # noqa :N801
 
         ensure_instance_of(value=signal_type, klass=type)
         self._signal_type: type[_ST_contra] = signal_type
-        self._dispatcher: Dispatcher = ensure_optional_instance_of(
-            value=dispatcher,
-            klass=Dispatcher,
-        ) or app_dispatcher
+        self._dispatcher: Dispatcher = (
+            ensure_optional_instance_of(
+                value=dispatcher,
+                klass=Dispatcher,
+            )
+            or app_dispatcher
+        )
         self._weak: bool = weak
 
     def __call__(self, f: Receiver[_ST_contra]) -> Receiver[_ST_contra]:
-        """
-        Attach a :class:`receiver<Receiver>` function to a :class:`Dispatcher`.
+        """Attach a :class:`receiver<Receiver>` function to a
+        :class:`Dispatcher`.
 
         :param f: The function to be attached to a ``Dispatcher``.
 
@@ -251,8 +249,7 @@ class connect(Generic[_ST_contra]):  # noqa :N801
 
 @final
 class DispatcherProxy(Dispatcher):
-    """
-    A :class:`Dispatcher` implementation that wraps other ``Dispatcher``
+    """A :class:`Dispatcher` implementation that wraps other ``Dispatcher``
     instances.
 
     The main advantage is it allows for substitutions of ``Dispatcher`` values
@@ -264,8 +261,7 @@ class DispatcherProxy(Dispatcher):
     __slots__ = ("_source_dispatcher",)
 
     def __init__(self, source_dispatcher: Dispatcher) -> None:
-        """
-        Initialize a new :class:`DispatcherProxy` instance that wraps the
+        """Initialize a new :class:`DispatcherProxy` instance that wraps the
         given source ``Dispatcher`` instance.
 
         :param source_dispatcher: The ``Dispatcher`` instance to wrap. This
@@ -280,18 +276,18 @@ class DispatcherProxy(Dispatcher):
         )
 
     def connect(
-            self,
-            signal_type: type[_ST_contra],
-            receiver: Receiver[_ST_contra],
-            *,
-            weak: bool = True,
+        self,
+        signal_type: type[_ST_contra],
+        receiver: Receiver[_ST_contra],
+        *,
+        weak: bool = True,
     ) -> None:
         self._source_dispatcher.connect(signal_type, receiver, weak=weak)
 
     def disconnect(
-            self,
-            signal_type: type[_ST_contra],
-            receiver: Receiver[_ST_contra],
+        self,
+        signal_type: type[_ST_contra],
+        receiver: Receiver[_ST_contra],
     ) -> None:
         self._source_dispatcher.disconnect(signal_type, receiver)
 
@@ -299,8 +295,7 @@ class DispatcherProxy(Dispatcher):
         self._source_dispatcher.send(signal, robust)
 
     def set_source(self, source_dispatcher: Dispatcher) -> None:
-        """
-        Change the :class:`dispatcher<Dispatcher>` instance wrapped by this
+        """Change the :class:`dispatcher<Dispatcher>` instance wrapped by this
         proxy.
 
         :param source_dispatcher: The new source dispatcher to use. This MUST
@@ -326,18 +321,19 @@ class _DispatcherImp(Dispatcher):
     def __init__(self) -> None:
         super().__init__()
         self._receivers: dict[
-            type[Signal], set[Receiver | weakref.ReferenceType[Receiver]],
+            type[Signal],
+            set[Receiver | weakref.ReferenceType[Receiver]],
         ] = {}
         self._lock: RLock = RLock()
         self._logger: Logger = logging.getLogger(type_fqn(self.__class__))
         self._has_dead_receivers: bool = False
 
     def connect(
-            self,
-            signal_type: type[_ST_contra],
-            receiver: Receiver[_ST_contra],
-            *,
-            weak: bool = True,
+        self,
+        signal_type: type[_ST_contra],
+        receiver: Receiver[_ST_contra],
+        *,
+        weak: bool = True,
     ) -> None:
         ensure_instance_of(
             value=signal_type,
@@ -353,7 +349,9 @@ class _DispatcherImp(Dispatcher):
         )
         ensure_not_none(receiver, "'receiver' MUST not be None.")
         self._logger.debug("Connect receiver, '%s'.", type_fqn(receiver))
-        _receiver: Receiver[_ST_contra] | weakref.ReferenceType[Receiver[_ST_contra]]  # noqa: E501
+        _receiver: (
+            Receiver[_ST_contra] | weakref.ReferenceType[Receiver[_ST_contra]]
+        )
         _receiver = receiver
         if weak:
             ref = weakref.ref
@@ -369,9 +367,9 @@ class _DispatcherImp(Dispatcher):
             self._receivers.setdefault(signal_type, set()).add(_receiver)
 
     def disconnect(
-            self,
-            signal_type: type[_ST_contra],
-            receiver: Receiver[_ST_contra],
+        self,
+        signal_type: type[_ST_contra],
+        receiver: Receiver[_ST_contra],
     ) -> None:
         ensure_instance_of(
             value=signal_type,
@@ -392,11 +390,13 @@ class _DispatcherImp(Dispatcher):
             receivers = self._receivers.get(signal_type, set())
             receivers.discard(receiver)
             # Remove the receiver even if it was connected "weakly".
-            receivers.difference_update({
+            weak_receivers: set[weakref.ReferenceType[Receiver[_ST_contra]]]
+            weak_receivers = {  # pragma: no cover #  See: https://github.com/pytest-dev/pytest/issues/3689
                 _receiver
                 for _receiver in filter(self._is_weak, receivers)
                 if _receiver() == receiver
-            })
+            }
+            receivers.difference_update(weak_receivers)
 
     def send(self, signal: Signal, robust: bool = True) -> None:
         ensure_instance_of(signal, Signal)
@@ -407,7 +407,8 @@ class _DispatcherImp(Dispatcher):
                 if not robust:
                     raise
                 self._logger.exception(
-                    "Error executing receiver '%s'.", type_fqn(receiver),
+                    "Error executing receiver '%s'.",
+                    type_fqn(receiver),
                 )
 
     def _clear_dead_receivers(self) -> None:
@@ -421,15 +422,19 @@ class _DispatcherImp(Dispatcher):
             self._has_dead_receivers = False
 
     def _live_receivers(
-            self,
-            signal_type: type[_ST_contra],
+        self,
+        signal_type: type[_ST_contra],
     ) -> Iterable[Receiver[_ST_contra]]:
         with self._lock:
             self._clear_dead_receivers()
-            receivers: set[Receiver[_ST_contra] | weakref.ReferenceType[Receiver[_ST_contra]]]  # noqa: E501
+            receivers: set[
+                Receiver[_ST_contra]
+                | weakref.ReferenceType[Receiver[_ST_contra]]
+            ]
             receivers = self._receivers.get(signal_type, set())
             return filter(
-                self._is_live, map(self._dereference_as_necessary, receivers),
+                self._is_live,
+                map(self._dereference_as_necessary, receivers),
             )
 
     def _mark_dead_receiver_present(self) -> None:
@@ -438,7 +443,8 @@ class _DispatcherImp(Dispatcher):
 
     @staticmethod
     def _dereference_as_necessary(
-            receiver: Receiver[_ST_contra] | weakref.ReferenceType[Receiver[_ST_contra]],  # noqa: E501
+        receiver: Receiver[_ST_contra]
+        | weakref.ReferenceType[Receiver[_ST_contra]],
     ) -> Receiver[_ST_contra] | None:
         # Dereference, if weak reference
         return (
@@ -454,14 +460,14 @@ class _DispatcherImp(Dispatcher):
 
     @staticmethod
     def _is_live(
-            receiver: Receiver[_ST_contra] | None,
+        receiver: Receiver[_ST_contra] | None,
     ) -> TypeGuard[Receiver[_ST_contra]]:
         return receiver is not None
 
     @staticmethod
     def _is_weak(
-            receiver: Receiver[_ST_contra]
-                      | weakref.ReferenceType[Receiver[_ST_contra]],
+        receiver: Receiver[_ST_contra]
+        | weakref.ReferenceType[Receiver[_ST_contra]],
     ) -> TypeGuard[weakref.ReferenceType[Receiver[_ST_contra]]]:
         return isinstance(receiver, weakref.ReferenceType)
 

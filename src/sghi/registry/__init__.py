@@ -1,6 +1,5 @@
-"""
-``Registry`` interface definition, implementing classes and helpers.
-"""
+"""``Registry`` interface definition, implementing classes and helpers."""
+
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
@@ -171,8 +170,7 @@ class Registry(metaclass=ABCMeta):
     @property
     @abstractmethod
     def dispatcher(self) -> Dispatcher:
-        """
-        Get the :class:`~sghi.dispatch.Dispatcher` associated with the
+        """Get the :class:`~sghi.dispatch.Dispatcher` associated with the
         ``Registry``.
 
         The dispatcher is responsible for emitting signals when items are added
@@ -204,8 +202,7 @@ class Registry(metaclass=ABCMeta):
 
     @abstractmethod
     def get(self, key: str, default: Any = None) -> Any:  # noqa: ANN401
-        """
-        Retrieve the value associated with the specified key from the
+        """Retrieve the value associated with the specified key from the
         ``Registry``, with an optional default value if the key does not exist.
 
         :param key: The key of the item to retrieve.
@@ -219,9 +216,8 @@ class Registry(metaclass=ABCMeta):
 
     @abstractmethod
     def pop(self, key: str, default: Any = None) -> Any:  # noqa: ANN401
-        """
-        Remove and return the value associated with the specified key from the
-        ``Registry``, or the specified default if the key does not exist.
+        """Remove and return the value associated with the specified key from
+        the ``Registry``, or the specified default if the key does not exist.
 
         .. note::
 
@@ -239,8 +235,7 @@ class Registry(metaclass=ABCMeta):
 
     @abstractmethod
     def setdefault(self, key: str, value: Any) -> Any:  # noqa: ANN401
-        """
-        Retrieve the value associated with the specified key from the
+        """Retrieve the value associated with the specified key from the
         ``Registry``, or set it if the key does not exist.
 
         .. note::
@@ -270,8 +265,7 @@ class Registry(metaclass=ABCMeta):
 
     @staticmethod
     def of_proxy(source_registry: Registry | None = None) -> RegistryProxy:
-        """
-        Create a :class:`RegistryProxy` instance that wraps the given
+        """Create a :class:`RegistryProxy` instance that wraps the given
         ``Registry`` instance.
 
         If ``source_registry`` is not given, it defaults to a value with

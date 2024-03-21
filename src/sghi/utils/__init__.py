@@ -1,6 +1,4 @@
-"""
-Common utilities used throughout SGHI projects.
-"""
+"""Common utilities used throughout SGHI projects."""
 
 from .checkers import (
     ensure_greater_or_equal,

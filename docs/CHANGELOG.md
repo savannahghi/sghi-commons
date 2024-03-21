@@ -1,3 +1,17 @@
+## [1.0.1-dev.2](https://github.com/savannahghi/sghi-commons/compare/v1.0.1-dev.1...v1.0.1-dev.2) (2024-03-20)
+
+
+### Bug Fixes
+
+* **types:** typing on `Comparable` related checkers ([#20](https://github.com/savannahghi/sghi-commons/issues/20)) ([7a741a8](https://github.com/savannahghi/sghi-commons/commit/7a741a8c132f38d753959bdf3fc3edc4ea5f02e0))
+
+## [1.0.1-dev.1](https://github.com/savannahghi/sghi-commons/compare/v1.0.0...v1.0.1-dev.1) (2024-03-20)
+
+
+### Dependency Updates
+
+* **deps:** add py3.12 support and drop py3.10 ([#13](https://github.com/savannahghi/sghi-commons/issues/13)) ([a763136](https://github.com/savannahghi/sghi-commons/commit/a763136074b61fa7822696ef657b589a4f448b42))
+
 ## [1.0.0](https://github.com/savannahghi/sghi-commons/compare/...v1.0.0) (2024-03-20)
 
 

@@ -1,6 +1,5 @@
-"""
-``Config`` interface definition, implementing classes and helpers.
-"""
+"""``Config`` interface definition, implementing classes and helpers."""
+
 from __future__ import annotations
 
 import logging
@@ -15,8 +14,7 @@ from ..utils import ensure_not_none, ensure_not_none_nor_empty, type_fqn
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
-
-    from typing_extensions import Never
+    from typing import Never
 
 
 # =============================================================================
@@ -41,9 +39,7 @@ _INITIALIZERS_REGISTRY: Final[set[_Initializer_Factory]] = set()
 
 
 def get_registered_initializer_factories() -> Sequence[_Initializer_Factory]:
-    """
-    Return a ``Sequence`` of all registered :class:`SettingInitializer` types
-    or factories.
+    """Return all registered :class:`SettingInitializer` factories or types.
 
     ``SettingInitializer`` types or their factories can be registered using
     the :func:`register` decorator.
@@ -55,11 +51,11 @@ def get_registered_initializer_factories() -> Sequence[_Initializer_Factory]:
 
 
 def register(f: _Initializer_Factory) -> _Initializer_Factory:
-    """
-    A decorator used to mark :class:`setting initializers <SettingInitializer>`
-    or their factories.
+    """Register a setting initializer or it's factory.
 
-    The registered initializer factories can be accessed using the
+    This decorator is used to mark
+    :class:`setting initializers <SettingInitializer>` or their factories. The
+    registered initializer factories can be accessed using the
     :func:`get_registered_initializer_factories` function.
 
     .. note::
@@ -87,6 +83,11 @@ class ConfigurationError(SGHIError):
     """Indicates a generic configuration error occurred."""
 
     def __init__(self, message: str | None = None):
+        """Initialize a ``ConfigurationError`` with the given error message.
+
+        :param message: An optional error message. A default will be used if
+            one isn't provided.
+        """
         _message: str = message or (
             "An unknown error occurred while configuring the app."
         )
@@ -114,15 +115,14 @@ class NoSuchSettingError(ConfigurationError, LookupError):
             setting,
             "'setting' MUST not be None or empty.",
         )
-        _message: str = (
-            message or f"Setting '{self._setting}' does not exist."
-        )
+        _message: str = message or f"Setting '{self._setting}' does not exist."
         ConfigurationError.__init__(self, message=_message)
 
     @property
     def setting(self) -> str:
-        """
-        The missing setting whose attempted access resulted in this
+        """The missing setting.
+
+        This is the missing setting whose attempted access resulted in this
         exception being raised.
 
         :return: The missing setting.
@@ -138,6 +138,11 @@ class NotSetupError(ConfigurationError):
     """
 
     def __init__(self, message: str | None = None):
+        """Initialize a ``NotSetupError`` with the given error message.
+
+        :param message: An optional error message. A default will be used if
+            one isn't provided.
+        """
         _message: str = message or (
             "Application not set up. Please call the 'sghi.app.setup()' "
             "function(or equivalent for the application) before proceeding."
@@ -177,7 +182,6 @@ class SettingRequiredError(ConfigurationError):
 
         :return: The setting that was not provided.
         """
-
         return self._setting
 
 
@@ -187,8 +191,9 @@ class SettingRequiredError(ConfigurationError):
 
 
 class SettingInitializer(Task[Any, Any], metaclass=ABCMeta):
-    """
-    This interface represents a task used to perform some initialization
+    """A :class:`~sghi.task.Task` used to initialize or validate a setting.
+
+    This interface represents a ``Task`` used to perform some initialization
     action based on the value of a setting. This can include *(but is not
     limited to)* validating a given config value, setting up additional
     components, set default values for settings, etc.
@@ -202,9 +207,8 @@ class SettingInitializer(Task[Any, Any], metaclass=ABCMeta):
 
     @property
     def has_secrets(self) -> bool:
-        """
-        Indicates whether the value of this setting contains secrets or other
-        sensitive data.
+        """Indicates whether the value of this setting contains secrets or
+        other sensitive data.
 
         This is important, and it indicates the value should be handled with
         special care to prevent accidental exposure of sensitive/private
@@ -310,9 +314,8 @@ class Config(metaclass=ABCMeta):
 
     @abstractmethod
     def get(self, setting: str, default: Any = None) -> Any:  # noqa: ANN401
-        """
-        Retrieve the value of the given setting or return the given default if
-        no such setting exists in this ``Config`` instance.
+        """Retrieve the value of the given setting or return the given default
+        if no such setting exists in this ``Config`` instance.
 
         .. tip::
 
@@ -369,19 +372,18 @@ class Config(metaclass=ABCMeta):
         """
         initializers: list[SettingInitializer] = []
         if not skip_registered_initializers:
+            registered_initializers = get_registered_initializer_factories()
             initializers.extend(
                 initializer_factory()
-                for initializer_factory in
-                get_registered_initializer_factories()
+                for initializer_factory in registered_initializers
             )
         initializers.extend(setting_initializers or ())
         return _ConfigImp(settings, settings_initializers=initializers)
 
     @staticmethod
     def of_awaiting_setup(err_msg: str | None = None) -> Config:
-        """
-        Create a new :class:`Config` instance to represent an application that
-        is not yet set up.
+        """Create a new :class:`Config` instance to represent an application
+        that is not yet set up.
 
         Any attempt to access settings from the returned instance will result
         in a :exc:`NotSetupError` being raised indicating to the user/caller
@@ -405,8 +407,7 @@ class Config(metaclass=ABCMeta):
         source_config: Config | None = None,
         not_setup_err_msg: str | None = None,
     ) -> ConfigProxy:
-        """
-        Create a :class:`ConfigProxy` instance that wraps the given `Config`
+        """Create a :class:`ConfigProxy` instance that wraps the given `Config`
         instance.
 
         If `source_config` is not given, it defaults to a value with similar
@@ -435,8 +436,7 @@ class Config(metaclass=ABCMeta):
 
 @final
 class ConfigProxy(Config):
-    """
-    A :class:`Config` implementation that wraps other ``Config`` instances,
+    """A :class:`Config` implementation that wraps other ``Config`` instances,
     facilitating whole configuration changes at runtime.
 
     The main advantage is it allows for lazy initialization of configuration
@@ -457,8 +457,7 @@ class ConfigProxy(Config):
     __slots__ = ("_source_config",)
 
     def __init__(self, source_config: Config) -> None:
-        """
-        Initialize a new :class:`ConfigProxy` instance that wraps the given
+        """Initialize a new :class:`ConfigProxy` instance that wraps the given
         source ``Config`` instance.
 
         :param source_config: The ``Config`` instance to wrap. This MUST not
@@ -546,8 +545,7 @@ class _ConfigImp(Config):
             raise NoSuchSettingError(setting=__setting) from None
 
     def get(self, setting: str, default: Any = None) -> Any:  # noqa: ANN401
-        """
-        Retrieve the value of the given setting or return the given default
+        """Retrieve the value of the given setting or return the given default
         if no such setting exists in this ``Config`` instance.
 
         This method can also be used for retrieval of settings with invalid
@@ -563,8 +561,7 @@ class _ConfigImp(Config):
         return self._settings.get(setting, default)
 
     def _run_initializers(self) -> None:
-        """
-        Run each setting initializer passing it the current raw value of the
+        """Run each setting initializer passing it the current raw value of the
         setting or ``None`` if the setting is not present.
 
         The return value of the initializer is set as the new value if the
@@ -590,7 +587,7 @@ class _ConfigImp(Config):
 
     @staticmethod
     def _group_related_initializers(
-            initializers: Sequence[SettingInitializer],
+        initializers: Sequence[SettingInitializer],
     ) -> Mapping[str, Sequence[SettingInitializer]]:
         """Group the given initializers based on the setting they belong to.
 
@@ -624,9 +621,8 @@ class _NotSetup(Config):
         self._err_msg: str | None = err_msg
 
     def __contains__(self, __setting: str, /) -> bool:
-        """
-        Raise a ``NotSetupError`` when trying to check for the availability of
-        a setting.
+        """Raise a ``NotSetupError`` when trying to check for the availability
+        of a setting.
 
         :param __setting: The setting name to check for.
 

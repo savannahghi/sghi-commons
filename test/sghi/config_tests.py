@@ -26,7 +26,6 @@ if TYPE_CHECKING:
 
 @register
 class DBPortInitializer(SettingInitializer):
-
     __slots__ = ()
 
     @property
@@ -59,7 +58,6 @@ class DBPortInitializer(SettingInitializer):
 
 
 class DBPasswordInitializer(SettingInitializer):
-
     __slots__ = ()
 
     @property
@@ -87,7 +85,6 @@ def test_get_registered_initializer_factories_return_value() -> None:
     """:func:`get_registered_initializer_factories` should return all
     initializer factories decorated using the :func:`register` decorator.
     """
-
     assert len(get_registered_initializer_factories()) == 1
     for init_factory in get_registered_initializer_factories():
         assert isinstance(init_factory(), SettingInitializer)
@@ -110,7 +107,6 @@ class TestConfig(TestCase):
         :meth:`Config.of` should return a ``Config`` instance created from the
         given settings and setting initializers.
         """
-
         config1: Config = Config.of(
             settings=self._settings,
             setting_initializers=self._setting_initializers,
@@ -157,11 +153,9 @@ class TestConfig(TestCase):
         assert exc_info.value.setting == "DB_PASSWORD"
 
     def test_of_awaiting_setup_factory_method_return_value(self) -> None:
-        """
-        :meth:`Config.of_awaiting_setup` should return a ``Config`` instance
+        """:meth:`Config.of_awaiting_setup` should return a ``Config`` instance
         that raises ``NotSetupError`` on any attempted access to its settings.
         """
-
         config1: Config = Config.of_awaiting_setup()
         config2: Config = Config.of_awaiting_setup(err_msg="Setup required!!!")
 
@@ -192,7 +186,6 @@ class TestConfig(TestCase):
         that represents an application that is not set up when a source
         ``Config`` is not provided.
         """
-
         config1: Config = Config.of_proxy()
         config2: Config = Config.of_proxy(not_setup_err_msg="Setup required!")
         config3: Config = Config.of_proxy(
@@ -211,13 +204,13 @@ class TestConfig(TestCase):
         assert "DB_PORT" in config3
         assert config3.DB_PORT == 5432
 
-    def test_of_proxy_err_msg_ignored_when_source_config_is_not_none(self) -> None:  # noqa: E501
-        """
-        :meth:`Config.of_proxy` should ignore the ``not_setup_err_msg``
+    def test_of_proxy_err_msg_ignored_when_source_config_is_not_none(
+        self,
+    ) -> None:
+        """:meth:`Config.of_proxy` should ignore the ``not_setup_err_msg``
         parameter if the corresponding ``source_config`` parameter is not
         ``None``.
         """
-
         config: Config = Config.of_proxy(
             source_config=Config.of_awaiting_setup(err_msg="Not yet!!"),
             not_setup_err_msg="Setup required!",
@@ -241,20 +234,16 @@ class TestConfigProxy(TestCase):
         self._instance: ConfigProxy = ConfigProxy(self._source_config)
 
     def test_init_fails_on_none_input_value(self) -> None:
-        """
-        :meth:`ConfigProxy.__init__` should raise a :exc:`ValueError` when
+        """:meth:`ConfigProxy.__init__` should raise a :exc:`ValueError` when
         given a ``None`` ``source_config``.
         """
-
         with pytest.raises(ValueError, match="config' MUST not be None"):
             ConfigProxy(source_config=None)  # type: ignore
 
     def test_dunder_contains_return_value(self) -> None:
-        """
-        :meth:`ConfigProxy.__contains__` should return the same value as its
+        """:meth:`ConfigProxy.__contains__` should return the same value as its
         wrapped ``Config`` value.
         """
-
         assert "DB_PORT" in self._source_config
         assert "DB_PORT" in self._instance
         assert "DB_PASSWORD" in self._source_config
@@ -263,11 +252,9 @@ class TestConfigProxy(TestCase):
         assert "DB_NAME" not in self._instance
 
     def test_dunder_getattr_return_value(self) -> None:
-        """
-        :meth:`ConfigProxy.__getattr__` should return the same value as its
+        """:meth:`ConfigProxy.__getattr__` should return the same value as its
         wrapped ``Config`` value.
         """
-
         assert self._source_config.DB_PORT == 5432
         assert self._instance.DB_PORT == 5432
         assert self._source_config.DB_PASSWORD == "s3c3r3PA55word!"  # noqa: S105
@@ -279,31 +266,30 @@ class TestConfigProxy(TestCase):
         if access to non-existing setting on the wrapped ``Config`` value is
         made.
         """
-
         with pytest.raises(NoSuchSettingError) as exc_info:
             self._instance.DB_NAME  # noqa B018
 
         assert exc_info.value.setting == "DB_NAME"
 
     def test_get_method_return_value(self) -> None:
-        """
-        :meth:`ConfigProxy.get` should return the same value as its wrapped
+        """:meth:`ConfigProxy.get` should return the same value as its wrapped
         ``Config`` value.
         """
-
         source: Config = self._source_config
         instan: Config = self._instance
 
         assert source.get("DB_PORT") == instan.get("DB_PORT") == 5432
-        assert source.get("DB_PASSWORD") == instan.get("DB_PASSWORD") == "s3c3r3PA55word!"  # noqa: E501
+        assert (
+            source.get("DB_PASSWORD")
+            == instan.get("DB_PASSWORD")
+            == "s3c3r3PA55word!"
+        )
         assert source.get("DB_NAME") is instan.get("DB_NAME") is None
 
     def test_set_source_method_side_effects(self) -> None:
-        """
-        :meth:`Config.set_source` should swap the wrapped source ``Config``
+        """:meth:`Config.set_source` should swap the wrapped source ``Config``
         instance to the new provided value.
         """
-
         self._instance.set_source(
             Config.of({}, skip_registered_initializers=True),
         )
@@ -317,25 +303,20 @@ class TestConfigProxy(TestCase):
         :meth:`Config.set_source` should raise :exc:``ValueError`` when given
         a ``None`` source ``Config`` instance as input.
         """
-
         with pytest.raises(ValueError, match="config' MUST not be None."):
             self._instance.set_source(source_config=None)  # type: ignore
 
 
 class TestSettingInitializer(TestCase):
-    """
-    Tests for the :SettingInitializer: interface default implementations.
-    """
+    """Tests for the :SettingInitializer: interface default implementations."""
 
     def test_has_secrets_return_value(self) -> None:
-        """
-        The default implementation of :attr:`SettingInitializer.has_secrets`
+        """The default implementation of :attr:`SettingInitializer.has_secrets`
         should evaluate to ``False``.
         """
 
         class SomeInitializer(SettingInitializer):
-            """
-            A :class:`SettingInitializer` implementation that relies on the
+            """A :class:`SettingInitializer` implementation that relies on the
             default :attr:`SettingInitializer.has_secrets` implementation.
             """
 

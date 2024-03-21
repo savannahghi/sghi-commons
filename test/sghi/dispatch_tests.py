@@ -29,7 +29,6 @@ class CounterReset(Signal):
 
 
 class Counter:
-
     __slots__ = ("_current", "_max_count", "_dispatcher")
 
     def __init__(self, max_count: int) -> None:
@@ -72,27 +71,21 @@ class Counter:
 
 
 class TestDispatcher(TestCase):
-    """
-    Tests for the :class:`Dispatcher` interface default implementations.
-    """
+    """Tests for the :class:`Dispatcher` interface default implementations."""
 
     def test_of_factory_method_return_value(self) -> None:
         """:meth:`Dispatcher.of` should return a ``Dispatch`` instance."""
-
         assert isinstance(Dispatcher.of(), Dispatcher)
 
     def test_of_proxy_factory_method_return_value(self) -> None:
-        """
-        :meth:`Dispatcher.of_proxy` should return a ``DispatcherProxy``
+        """:meth:`Dispatcher.of_proxy` should return a ``DispatcherProxy``
         instance.
         """
-
         assert isinstance(Dispatcher.of_proxy(), DispatcherProxy)
 
 
 class TestDispatcherOf(TestCase):
-    """
-    Tests for the :class:`Dispatcher` implementation returned by the
+    """Tests for the :class:`Dispatcher` implementation returned by the
     :meth:`Dispatcher.of` factory method.
     """
 
@@ -103,8 +96,7 @@ class TestDispatcherOf(TestCase):
         self._counter: Counter = Counter(self._counter_max_value)
 
     def test_connect_fails_on_non_type_signal_type_as_input(self) -> None:
-        """
-        :meth:`Dispatcher.connect` should raise a :exc:`TypeError` when
+        """:meth:`Dispatcher.connect` should raise a :exc:`TypeError` when
         given a `signal_type` parameter that is not a type.
         """
         with pytest.raises(TypeError, match="MUST be a type") as exc_info:
@@ -116,8 +108,7 @@ class TestDispatcherOf(TestCase):
         assert exc_info.value.args[0] == "'signal_type' MUST be a type."
 
     def test_connect_fails_on_signal_type_not_signal_subclass(self) -> None:
-        """
-        :meth:`Dispatcher.connect` should raise a :exc:`TypeError` when
+        """:meth:`Dispatcher.connect` should raise a :exc:`TypeError` when
         given a `signal_type` parameter that is not a subclass of
         :class:`Signal`.
         """
@@ -128,7 +119,7 @@ class TestDispatcherOf(TestCase):
             )
 
         assert exc_info.value.args[0] == (
-                f"'signal_type' MUST be a subclass of '{type_fqn(Signal)}'."
+            f"'signal_type' MUST be a subclass of '{type_fqn(Signal)}'."
         )
 
     def test_connect_fails_on_none_receiver_as_input_value(self) -> None:
@@ -140,15 +131,14 @@ class TestDispatcherOf(TestCase):
             self._instance.connect(CounterAdvanced, None)  # type: ignore
 
     def test_connect_side_effects_when_weak_is_set_to_false(self) -> None:
-        """
-        :meth:`Dispatcher.connect` should add a receiver and retain it even
+        """:meth:`Dispatcher.connect` should add a receiver and retain it even
         when it would normally be garbage collected when the ``weak``
         parameter is set to ``False``.
         """
         output: list[int] = []
 
-        def on_counter_advanced(signa: CounterAdvanced) -> None:
-            output.append(signa.current_value)
+        def on_counter_advanced(signal: CounterAdvanced) -> None:
+            output.append(signal.current_value)
 
         class OnCounterAdvance:
             def execute(self, signal: CounterAdvanced) -> None:
@@ -175,15 +165,14 @@ class TestDispatcherOf(TestCase):
         assert output[1] == 1
 
     def test_connect_side_effects_when_weak_is_set_to_true(self) -> None:
-        """
-        :meth:`Dispatcher.connect` should add a receiver but automatically
+        """:meth:`Dispatcher.connect` should add a receiver but automatically
         remove it after garbage collection when the ``weak`` parameter is set
         to ``True``.
         """
         output: list[int] = []
 
-        def on_counter_advanced(signa: CounterAdvanced) -> None:
-            output.append(signa.current_value)
+        def on_counter_advanced(signal: CounterAdvanced) -> None:
+            output.append(signal.current_value)
 
         class OnCounterAdvance:
             def execute(self, signal: CounterAdvanced) -> None:
@@ -208,8 +197,7 @@ class TestDispatcherOf(TestCase):
         assert len(output) == 0
 
     def test_disconnect_fails_on_non_type_signal_type_as_input(self) -> None:
-        """
-        :meth:`Dispatcher.disconnect` should raise a :exc:`TypeError` when
+        """:meth:`Dispatcher.disconnect` should raise a :exc:`TypeError` when
         given a `signal_type` parameter that is not a type.
         """
         with pytest.raises(TypeError, match="MUST be a type") as exc_info:
@@ -221,8 +209,7 @@ class TestDispatcherOf(TestCase):
         assert exc_info.value.args[0] == "'signal_type' MUST be a type."
 
     def test_disconnect_fails_on_signal_type_not_signal_subclass(self) -> None:
-        """
-        :meth:`Dispatcher.disconnect` should raise a :exc:`TypeError` when
+        """:meth:`Dispatcher.disconnect` should raise a :exc:`TypeError` when
         given a `signal_type` parameter that is not a subclass of
         :class:`Signal`.
         """
@@ -237,8 +224,7 @@ class TestDispatcherOf(TestCase):
         )
 
     def test_disconnect_fails_on_none_receiver_as_input_value(self) -> None:
-        """
-        :meth:`Dispatcher.disconnect` should raise a :exc:`ValueError` when
+        """:meth:`Dispatcher.disconnect` should raise a :exc:`ValueError` when
         given a ``None`` value on the ``receiver`` parameter.
         """
         with pytest.raises(ValueError, match="MUST not be None"):
@@ -253,12 +239,12 @@ class TestDispatcherOf(TestCase):
         output: list[int] = []
 
         @connect(CounterAdvanced, dispatcher=counter.dispatcher, weak=False)
-        def on_counter_advanced1(signa: CounterAdvanced) -> None:  # type: ignore
-            output.append(signa.current_value)
+        def on_counter_advanced1(signal: CounterAdvanced) -> None:  # type: ignore
+            output.append(signal.current_value)
 
         @connect(CounterAdvanced, dispatcher=counter.dispatcher, weak=False)
-        def on_counter_advanced2(signa: CounterAdvanced) -> None:
-            output.append(signa.current_value)
+        def on_counter_advanced2(signal: CounterAdvanced) -> None:
+            output.append(signal.current_value)
 
         counter.advance_counter()
         counter.dispatcher.disconnect(CounterAdvanced, on_counter_advanced2)
@@ -278,12 +264,12 @@ class TestDispatcherOf(TestCase):
         output: list[int] = []
 
         @connect(CounterAdvanced, dispatcher=counter.dispatcher, weak=True)
-        def on_counter_advanced1(signa: CounterAdvanced) -> None:
-            output.append(signa.current_value)
+        def on_counter_advanced1(signal: CounterAdvanced) -> None:
+            output.append(signal.current_value)
 
         @connect(CounterAdvanced, dispatcher=counter.dispatcher, weak=True)
-        def on_counter_advanced2(signa: CounterAdvanced) -> None:  # type: ignore
-            output.append(signa.current_value)
+        def on_counter_advanced2(signal: CounterAdvanced) -> None:  # type: ignore
+            output.append(signal.current_value)
 
         counter.advance_counter()
         counter.dispatcher.disconnect(CounterAdvanced, on_counter_advanced1)
@@ -295,16 +281,15 @@ class TestDispatcherOf(TestCase):
         assert output[2] == 2
 
     def test_send_fails_when_signal_is_not_a_signal(self) -> None:
-        """
-        :method:`Dispatcher.send` should raise a :exc:`ValueError` when the
+        """:method:`Dispatcher.send` should raise a :exc:`ValueError` when the
         ``signal`` parameter is not an instance of :class:`Signal`.
         """
 
     def test_send_side_effects_when_robust_is_set_to_false(self) -> None:
-        """
-        :meth:`Dispatcher.send` should propagate any errors raised by
+        """:meth:`Dispatcher.send` should propagate any errors raised by
         receivers.
         """
+
         @connect(CounterReset, dispatcher=self._instance, weak=False)
         def on_counter_reset(signal: CounterReset) -> None:  # type: ignore
             raise ZeroDivisionError
@@ -313,8 +298,7 @@ class TestDispatcherOf(TestCase):
             self._instance.send(CounterReset(0), robust=False)
 
     def test_send_side_effects_when_robust_is_set_to_true(self) -> None:
-        """
-        :meth:`Dispatcher.send` should silently discard any errors raised by
+        """:meth:`Dispatcher.send` should silently discard any errors raised by
         receivers.
         """
         output: list[int] = []
@@ -336,8 +320,7 @@ class TestDispatcherOf(TestCase):
         assert output[0] == 0
 
     @staticmethod
-    def on_counter_reset(signal: CounterReset) -> None:
-        ...
+    def on_counter_reset(signal: CounterReset) -> None: ...
 
 
 class TestDispatcherProxy(TestCase):
@@ -350,7 +333,9 @@ class TestDispatcherProxy(TestCase):
             self._source_dispatcher,
         )
 
-    def test_init_fails_when_source_dispatcher_is_not_a_dispatcher(self) -> None:  # noqa: E501
+    def test_init_fails_when_source_dispatcher_is_not_a_dispatcher(
+        self,
+    ) -> None:
         """
         :meth:`DispatcherProxy.__init__` should raise a :exc:`TypeError` when
         the ``source_dispatcher`` parameter given is not an instance of
@@ -369,8 +354,8 @@ class TestDispatcherProxy(TestCase):
         """
         output: list[int] = []
 
-        def on_counter_advanced(signa: CounterAdvanced) -> None:
-            output.append(signa.current_value)
+        def on_counter_advanced(signal: CounterAdvanced) -> None:
+            output.append(signal.current_value)
 
         class OnCounterAdvance:
             def execute(self, signal: CounterAdvanced) -> None:
@@ -406,12 +391,12 @@ class TestDispatcherProxy(TestCase):
         output: list[int] = []
 
         @connect(CounterAdvanced, dispatcher=self._instance, weak=False)
-        def on_counter_advanced1(signa: CounterAdvanced) -> None:
-            output.append(signa.current_value)
+        def on_counter_advanced1(signal: CounterAdvanced) -> None:
+            output.append(signal.current_value)
 
         @connect(CounterAdvanced, dispatcher=self._instance, weak=True)
-        def on_counter_advanced2(signa: CounterAdvanced) -> None:
-            output.append(signa.current_value)
+        def on_counter_advanced2(signal: CounterAdvanced) -> None:
+            output.append(signal.current_value)
 
         self._instance.send(CounterAdvanced(current_value=1, advanced_by=1))
 
@@ -425,12 +410,13 @@ class TestDispatcherProxy(TestCase):
         assert output[0] == 1
         assert output[1] == 1
 
-    def test_set_source_fails_when_source_dispatch_is_not_a_dispatcher(self) -> None:  # noqa: E501
+    def test_set_source_fails_when_source_dispatch_is_not_a_dispatcher(
+        self,
+    ) -> None:
         """
         :meth:`DispatcherProxy.set_source` should raise a :exc:`TypeError` when
         the ``source_dispatcher`` parameter given is not an instance of
         :class:`Dispatcher`.
         """
-
         with pytest.raises(TypeError, match="is not an instance of"):
             self._instance.set_source(source_dispatcher=None)  # type: ignore

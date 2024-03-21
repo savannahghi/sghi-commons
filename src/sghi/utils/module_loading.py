@@ -1,6 +1,5 @@
-"""
-Utilities to load modules, types, and objects from dotted path strings.
-"""
+"""Utilities to load modules, types, and objects from dotted path strings."""
+
 import inspect
 from typing import Any, Final, TypeVar, cast
 
@@ -31,8 +30,7 @@ _UNKNOWN_STR: Final[str] = "UNKNOWN"
 
 
 def import_string(dotted_path: str) -> Any:  # noqa: ANN401
-    """
-    Import a dotted module path and return the Python object designated by
+    """Import a dotted module path and return the Python object designated by
     the last name in the path.
 
     The `dotted path` can refer to any "importable" Python object
@@ -50,7 +48,6 @@ def import_string(dotted_path: str) -> Any:  # noqa: ANN401
     :raises ImportError: If the import fails for some reason.
     :raises ValueError: If the given dotted path is ``None`` or empty.
     """
-
     entry_point = EntryPoint(
         name=_UNKNOWN_STR,
         group=_UNKNOWN_STR,
@@ -92,8 +89,8 @@ def import_string_as_klass(
     _module = import_string(dotted_path)
     if not inspect.isclass(_module) or not issubclass(_module, target_klass):
         err_msg: str = (
-            "Invalid value, '{}' does not refer to a valid type or to a "
-            "subtype of '{}'.".format(dotted_path, type_fqn(target_klass))
+            f"Invalid value, '{dotted_path}' does not refer to a valid type "
+            f"or to a subtype of '{type_fqn(target_klass)}'."
         )
         raise TypeError(err_msg)
 

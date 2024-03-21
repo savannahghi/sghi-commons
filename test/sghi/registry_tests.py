@@ -19,14 +19,12 @@ class TestRegistry(TestCase):
 
     def test_of_factory_method_return_value(self) -> None:
         """:meth:`Registry.of` should return a ``Registry`` instance."""
-
         assert isinstance(Registry.of(), Registry)
 
     def test_of_proxy_factory_method_return_value(self) -> None:
         """
         :meth:`Registry.of_proxy` should return a ``RegistryProxy`` instance.
         """
-
         assert isinstance(RegistryProxy.of_proxy(), RegistryProxy)
 
 
@@ -47,7 +45,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.__contain__` should return ``True`` if an item with the
         specified key exists in the registry or ``False`` otherwise.
         """
-
         assert "ITEM_KEY_1" in self._instance
         assert "ITEM_KEY_2" in self._instance
         assert "ITEM_KEY_3" not in self._instance
@@ -57,7 +54,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.__delitem__` should remove the given item from the
         registry if it is already present.
         """
-
         output: set[str] = set()
 
         @connect(RegistryItemRemoved, dispatcher=self._instance.dispatcher)
@@ -78,7 +74,6 @@ class TestRegistryOf(TestCase):
         :exc:`NoSuchRegistryItemError` when given an item that is non-existent
         in the registry.
         """
-
         with pytest.raises(NoSuchRegistryItemError) as exc_info:
             del self._instance["ITEM_KEY_3"]
 
@@ -89,7 +84,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.__delitem__` should raise a :exc:`ValueError` when
         given a ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -102,7 +96,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.__getitem__` should return the value associated with
         the given item from the registry if it is already present.
         """
-
         assert self._instance["ITEM_KEY_1"] == "ITEM_VALUE_1"
         assert self._instance["ITEM_KEY_2"] == "ITEM_VALUE_2"
 
@@ -112,7 +105,6 @@ class TestRegistryOf(TestCase):
         :exc:`NoSuchRegistryItemError` when given a key of a non-existent item
         in the registry.
         """
-
         with pytest.raises(NoSuchRegistryItemError) as exc_info:
             value = self._instance["ITEM_KEY_3"]  # pyright: ignore  # noqa: F841
 
@@ -123,7 +115,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.__getitem__` should raise a :exc:`ValueError` when
         given a ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -136,7 +127,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.__setitem__` should add an item in the registry or
         update the value of an existing item.
         """
-
         output: dict[str, str] = {}
 
         @connect(RegistryItemSet, dispatcher=self._instance.dispatcher)
@@ -158,7 +148,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.__setitem__` should raise a :exc:`ValueError` when
         given a ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -172,7 +161,6 @@ class TestRegistryOf(TestCase):
         item from the registry if it is already present. It should return
         ``None`` of the given default if the item is not in the registry.
         """
-
         assert self._instance.get("ITEM_KEY_1") == "ITEM_VALUE_1"
         assert self._instance.get("ITEM_KEY_2") == "ITEM_VALUE_2"
         assert self._instance.get("ITEM_KEY_3") is None
@@ -183,7 +171,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.get` should raise a :exc:`ValueError` when given a
         ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -196,7 +183,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.pop` should raise a :exc:`ValueError` when given a
         ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -210,7 +196,6 @@ class TestRegistryOf(TestCase):
         registry if it is already present. If not, it should return ``None`` or
         the given default.
         """
-
         output: set[str] = set()
 
         @connect(RegistryItemRemoved, dispatcher=self._instance.dispatcher)
@@ -233,7 +218,6 @@ class TestRegistryOf(TestCase):
         :meth:`Registry.setdefault` should raise a :exc:`ValueError` when given
         a ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -247,7 +231,6 @@ class TestRegistryOf(TestCase):
         the specified key from the registry, or set it if the key does not
         exist.
         """
-
         output: dict[str, str] = {}
 
         @connect(RegistryItemSet, dispatcher=self._instance.dispatcher)
@@ -266,7 +249,6 @@ class TestRegistryOf(TestCase):
 
 
 class TestRegistryProxy(TestCase):
-
     def setUp(self) -> None:
         super().setUp()
         self._source_registry: Registry = Registry.of()
@@ -281,7 +263,7 @@ class TestRegistryProxy(TestCase):
         :class:`Registry`.
         """
         with pytest.raises(TypeError, match="is not an instance of"):
-            RegistryProxy(source_registry=None)   # type: ignore
+            RegistryProxy(source_registry=None)  # type: ignore
 
         with pytest.raises(TypeError, match="is not an instance of"):
             RegistryProxy(source_registry={})  # type: ignore
@@ -291,7 +273,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.__contain__` should return ``True`` if an item
         with the specified key exists in the registry or ``False`` otherwise.
         """
-
         assert "ITEM_KEY_1" in self._instance
         assert "ITEM_KEY_2" in self._instance
         assert "ITEM_KEY_3" not in self._instance
@@ -301,7 +282,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.__delitem__` should remove the given item from the
         registry if it is already present.
         """
-
         output: set[str] = set()
 
         @connect(RegistryItemRemoved, dispatcher=self._instance.dispatcher)
@@ -322,7 +302,6 @@ class TestRegistryProxy(TestCase):
         :exc:`NoSuchRegistryItemError` when given an item that is non-existent
         in the registry.
         """
-
         with pytest.raises(NoSuchRegistryItemError) as exc_info:
             del self._instance["ITEM_KEY_3"]
 
@@ -333,7 +312,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.__delitem__` should raise a :exc:`ValueError` when
         given a ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -346,7 +324,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.__getitem__` should return the value associated
         with the given item from the registry if it is already present.
         """
-
         assert self._instance["ITEM_KEY_1"] == "ITEM_VALUE_1"
         assert self._instance["ITEM_KEY_2"] == "ITEM_VALUE_2"
 
@@ -356,7 +333,6 @@ class TestRegistryProxy(TestCase):
         :exc:`NoSuchRegistryItemError` when given a key of a non-existent item
         in the registry.
         """
-
         with pytest.raises(NoSuchRegistryItemError) as exc_info:
             value = self._instance["ITEM_KEY_3"]  # pyright: ignore  # noqa: F841
 
@@ -367,7 +343,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.__getitem__` should raise a :exc:`ValueError` when
         given a ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -380,7 +355,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.__setitem__` should add an item in the registry or
         update the value of an existing item.
         """
-
         output: dict[str, str] = {}
 
         @connect(RegistryItemSet, dispatcher=self._instance.dispatcher)
@@ -402,7 +376,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.__setitem__` should raise a :exc:`ValueError` when
         given a ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -416,7 +389,6 @@ class TestRegistryProxy(TestCase):
         given item from the registry if it is already present. It should return
         ``None`` of the given default if the item is not in the registry.
         """
-
         assert self._instance.get("ITEM_KEY_1") == "ITEM_VALUE_1"
         assert self._instance.get("ITEM_KEY_2") == "ITEM_VALUE_2"
         assert self._instance.get("ITEM_KEY_3") is None
@@ -427,7 +399,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.get` should raise a :exc:`ValueError` when given
         a ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -440,7 +411,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.pop` should raise a :exc:`ValueError` when given a
         ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -454,7 +424,6 @@ class TestRegistryProxy(TestCase):
         the registry if it is already present. If not, it should return
         ``None`` or the given default.
         """
-
         output: set[str] = set()
 
         @connect(RegistryItemRemoved, dispatcher=self._instance.dispatcher)
@@ -472,13 +441,14 @@ class TestRegistryProxy(TestCase):
         assert "ITEM_KEY_1" not in self._instance
         assert "ITEM_KEY_2" not in self._instance
 
-    def test_set_source_fails_when_source_register_is_not_a_registry(self) -> None:  # noqa: E501
+    def test_set_source_fails_when_source_register_is_not_a_registry(
+        self,
+    ) -> None:
         """
         :meth:`RegistryProxy.set_source` should raise a :exc:`TypeError` when
         the ``source_registry`` parameter given is not an instance of
         :class:`Registry`.
         """
-
         with pytest.raises(TypeError, match="is not an instance of"):
             self._instance.set_source(source_registry=None)  # type: ignore
 
@@ -487,7 +457,6 @@ class TestRegistryProxy(TestCase):
         :meth:`RegistryProxy.setdefault` should raise a :exc:`ValueError` when
         given a ``None`` item key.
         """
-
         item_key: str = None  # type: ignore
 
         with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
@@ -501,7 +470,6 @@ class TestRegistryProxy(TestCase):
         with the specified key from the registry, or set it if the key does not
         exist.
         """
-
         output: dict[str, str] = {}
 
         @connect(RegistryItemSet, dispatcher=self._instance.dispatcher)

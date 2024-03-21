@@ -1,6 +1,5 @@
-"""
-Useful validators and predicates.
-"""
+"""Useful validators and predicates."""
+
 from collections.abc import Callable, Sized
 from typing import Any, TypeVar
 
@@ -10,6 +9,7 @@ from sghi.typing import Comparable
 # TYPES
 # =============================================================================
 
+_CT = TypeVar("_CT", bound=Comparable)
 _ST = TypeVar("_ST", bound=Sized)
 _T = TypeVar("_T")
 
@@ -20,12 +20,11 @@ _T = TypeVar("_T")
 
 
 def ensure_greater_or_equal(
-        value: Comparable,
-        base_value: Comparable,
-        message: str = "'value' must be greater than or equal to 'base_value'.",  # noqa: E501
-) -> Comparable:
-    """
-    Check that the given value is greater that or equal to the given base
+    value: _CT,
+    base_value: Comparable,
+    message: str = "'value' must be greater than or equal to 'base_value'.",
+) -> _CT:
+    """Check that the given value is greater that or equal to the given base
     value.
 
     If ``value`` is less than the given ``base_value``, then a
@@ -47,10 +46,10 @@ def ensure_greater_or_equal(
 
 
 def ensure_greater_than(
-        value: Comparable,
-        base_value: Comparable,
-        message: str = "'value' must be greater than 'base_value'.",
-) -> Comparable:
+    value: _CT,
+    base_value: Comparable,
+    message: str = "'value' must be greater than 'base_value'.",
+) -> _CT:
     """Check that the given value is greater that the given base value.
 
     If ``value`` is less than or equal to the given ``base_value``, then a
@@ -72,9 +71,9 @@ def ensure_greater_than(
 
 
 def ensure_instance_of(
-        value: Any,  # noqa: ANN401
-        klass: type[_T],
-        message: str | None = None,
+    value: Any,  # noqa: ANN401
+    klass: type[_T],
+    message: str | None = None,
 ) -> _T:
     """Check that the given value is an instance of the given type.
 
@@ -93,6 +92,7 @@ def ensure_instance_of(
     """
     if not isinstance(value, klass):
         from .others import type_fqn
+
         _message: str = message or (
             f"'value' is not an instance of '{type_fqn(klass)}'."
         )
@@ -101,10 +101,10 @@ def ensure_instance_of(
 
 
 def ensure_less_or_equal(
-        value: Comparable,
-        base_value: Comparable,
-        message: str = "'value' must be less than or equal to 'base_value'.",
-) -> Comparable:
+    value: _CT,
+    base_value: Comparable,
+    message: str = "'value' must be less than or equal to 'base_value'.",
+) -> _CT:
     """Check that the given value is less than or equal the given base value.
 
     If ``value`` is greater than the given ``base_value``, then a
@@ -126,10 +126,10 @@ def ensure_less_or_equal(
 
 
 def ensure_less_than(
-        value: Comparable,
-        base_value: Comparable,
-        message: str = "'value' must be less than 'base_value'.",
-) -> Comparable:
+    value: _CT,
+    base_value: Comparable,
+    message: str = "'value' must be less than 'base_value'.",
+) -> _CT:
     """Check that the given value is less that the given base value.
 
     If ``value`` is greater than or equal to the given ``base_value``; then a
@@ -151,8 +151,8 @@ def ensure_less_than(
 
 
 def ensure_not_none(
-        value: _T | None,
-        message: str = '"value" cannot be None.',
+    value: _T | None,
+    message: str = '"value" cannot be None.',
 ) -> _T:
     """Check that a given value is not ``None``.
 
@@ -173,8 +173,8 @@ def ensure_not_none(
 
 
 def ensure_not_none_nor_empty(
-        value: _ST,
-        message: str = '"value" cannot be None or empty.',
+    value: _ST,
+    message: str = '"value" cannot be None or empty.',
 ) -> _ST:
     """
     Check that a :class:`Sized` value is not ``None`` or empty (has a size of
@@ -197,12 +197,11 @@ def ensure_not_none_nor_empty(
 
 
 def ensure_optional_instance_of(
-        value: Any,  # noqa: ANN401
-        klass: type[_T],
-        message: str | None = None,
+    value: Any,  # noqa: ANN401
+    klass: type[_T],
+    message: str | None = None,
 ) -> _T | None:
-    """
-    Check that the given value is ``None`` or an instance of the given type.
+    """Check that the given value is ``None`` or an instance of the given type.
 
     If ``value`` is not ``None`` or an instance of ``klass``, then a
     :exc:`TypeError` is raised; else ``value`` is returned as is.
@@ -219,6 +218,7 @@ def ensure_optional_instance_of(
     """
     if not isinstance(value, type(None) | klass):
         from .others import type_fqn
+
         _message: str = message or (
             f"'value' is not an instance of '{type_fqn(klass)}' or None."
         )
@@ -227,9 +227,9 @@ def ensure_optional_instance_of(
 
 
 def ensure_predicate(
-        test: bool,
-        message: str = "Invalid value. Predicate evaluation failed.",
-        exc_factory: Callable[[str], BaseException] = ValueError,
+    test: bool,
+    message: str = "Invalid value. Predicate evaluation failed.",
+    exc_factory: Callable[[str], BaseException] = ValueError,
 ) -> None:
     """Check that a predicate evaluation passes.
 

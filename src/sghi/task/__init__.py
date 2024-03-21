@@ -1,6 +1,5 @@
-"""
-``Task`` interface definition together with its common implementations.
-"""
+"""``Task`` interface definition together with its common implementations."""
+
 from __future__ import annotations
 
 import warnings
@@ -22,7 +21,7 @@ from ..disposable import not_disposed as _nd_factory
 from ..utils import ensure_not_none, ensure_not_none_nor_empty, type_fqn
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
 # =============================================================================
 # TYPES
@@ -39,7 +38,7 @@ _OT = TypeVar("_OT")
 
 
 def _callables_to_tasks_as_necessary(
-        tasks: Sequence[Task[_IT, _OT] | Callable[[_IT], _OT]],
+    tasks: Sequence[Task[_IT, _OT] | Callable[[_IT], _OT]],
 ) -> Sequence[Task[_IT, _OT]]:
     """Convert callables to :class:`Task` instances if necessary.
 
@@ -72,8 +71,7 @@ class ConcurrentExecutorDisposedError(ResourceDisposedError):
     """
 
     def __init__(self, message: str | None = "ConcurrentExecutor disposed."):
-        """
-        Initialize a ``ConcurrentExecutorDisposedError`` with an optional
+        """Initialize a ``ConcurrentExecutorDisposedError`` with an optional
         message.
 
         :param message: An optional message for the exception.
@@ -177,8 +175,7 @@ class Chain(Task[Callable[[_IT], Any], "Chain[Any]"], Generic[_IT]):
         return self._value
 
     def execute(self, an_input: Callable[[_IT], _OT]) -> Chain[_OT]:
-        """
-        Perform the given transformation on the wrapped value and wrap the
+        """Perform the given transformation on the wrapped value and wrap the
         result in a new ``Chain`` instance.
 
         :param an_input: A callable defining a transformation to be applied to
@@ -205,8 +202,7 @@ class Consume(Task[_IT, _IT], Generic[_IT]):
     __slots__ = ("_accept",)
 
     def __init__(self, accept: Callable[[_IT], Any]) -> None:
-        """
-        Initialize a new :class:`Consume` instance that applies the given
+        """Initialize a new :class:`Consume` instance that applies the given
         action to it's inputs.
 
         :param accept: A callable to apply to this task's inputs. This MUST not
@@ -362,13 +358,12 @@ class ConcurrentExecutor(
     )
 
     def __init__(
-            self,
-            *tasks: Task[_IT, _OT] | Callable[[_IT], _OT],
-            wait_for_completion: bool = True,
-            executor: Executor | None = None,
+        self,
+        *tasks: Task[_IT, _OT] | Callable[[_IT], _OT],
+        wait_for_completion: bool = True,
+        executor: Executor | None = None,
     ):
-        """
-        Initialize a new `ConcurrentExecutor` instance with the given
+        """Initialize a new `ConcurrentExecutor` instance with the given
         properties.
 
         :param tasks: The tasks to be executed concurrently. This MUST not be
@@ -480,8 +475,8 @@ class ConcurrentExecutor(
 
     @staticmethod
     def _accumulate(
-            partial_results: MutableSequence[Future[_OT]],
-            task_output: Future[_OT],
+        partial_results: MutableSequence[Future[_OT]],
+        task_output: Future[_OT],
     ) -> MutableSequence[Future[_OT]]:
         partial_results.append(task_output)
         return partial_results
