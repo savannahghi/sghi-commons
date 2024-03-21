@@ -18,7 +18,12 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from ..disposable import Disposable, ResourceDisposedError
 from ..disposable import not_disposed as _nd_factory
-from ..utils import ensure_not_none, ensure_not_none_nor_empty, type_fqn
+from ..utils import (
+    ensure_not_none,
+    ensure_not_none_nor_empty,
+    ensure_predicate,
+    type_fqn,
+)
 
 if TYPE_CHECKING:
     from typing import Self
@@ -57,6 +62,22 @@ def _callables_to_tasks_as_necessary(
         task if isinstance(task, Task) else Task.of_callable(task)
         for task in tasks
     )
+
+
+def task(f: Callable[[_IT], _OT]) -> Task[_IT, _OT]:
+    """Mark/Decorate a ``Callable`` object as a :class:`Task`.
+
+    :param f: The callable object to be decorated. The callable *MUST* have at
+        *MOST* one required argument.
+
+    :return: A ``Task`` instance that wraps the given ``Callable`` object.
+
+    :raise ValueError: If the given value is ``None`` or not a ``Callable``.
+    """
+    ensure_not_none(f, message="The given callable MUST not be None.")
+    ensure_predicate(callable(f), message="A callable object is required.")
+
+    return _OfCallable(source_callable=f)
 
 
 # =============================================================================
@@ -540,4 +561,5 @@ __all__ = [
     "consume",
     "execute_concurrently",
     "pipe",
+    "task",
 ]

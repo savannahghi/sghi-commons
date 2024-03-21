@@ -15,11 +15,68 @@ from sghi.task import (
     chain,
     consume,
     pipe,
+    task,
 )
 from sghi.utils import ensure_greater_than, future_succeeded
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+
+def test_task_decorator_fails_on_non_callable_input_value() -> None:
+    """
+    :func:`task` should raise a :exc:`ValueError` when given a non-callable`
+    value.
+    """
+
+    with pytest.raises(ValueError, match="callable object") as exc_info:
+        task("Not a function")  # type: ignore
+
+    assert exc_info.value.args[0] == "A callable object is required."
+
+
+def test_task_decorator_fails_on_a_none_input_value() -> None:
+    """
+    :func:`task` should raise a :exc:`ValueError` when given a ``None`` value.
+    """
+
+    with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
+        task(None)  # type: ignore
+
+    assert exc_info.value.args[0] == "The given callable MUST not be None."
+
+
+def test_task_decorator_returns_correct_value() -> None:
+    """
+    :func:`task` should return a ``Task`` instance with the same semantics as
+    the wrapped callable.
+    """
+
+    add_100: Callable[[int], int] = partial(operator.add, 100)
+    add_100_task: Task[int, int] = task(add_100)
+
+    @task
+    def int_to_str(value: int) -> str:
+        return str(value)
+
+    assert add_100(10) == add_100_task(10) == 110
+    assert add_100(-10) == add_100_task(-10) == 90
+    assert int_to_str(10) == str(10) == "10"
+    assert int_to_str.execute(3) == str(3) == "3"
+
+
+def test_task_decorator_returns_expected_value() -> None:
+    """:func:`task` should return a ``Task`` instance."""
+
+    add_100: Callable[[int], int] = partial(operator.add, 100)
+    add_100_task: Task[int, int] = task(add_100)
+
+    @task
+    def int_to_str(value: int) -> str:
+        return str(value)
+
+    assert isinstance(add_100_task, Task)
+    assert isinstance(int_to_str, Task)
 
 
 class TestConsume(TestCase):
@@ -423,8 +480,8 @@ class TestPipe(TestCase):
         that comprise the ``pipe``. This should be ``Task`` instances
         regardless of whether the original callable was a ``Task``.
         """
-        for task in self._instance.tasks:
-            assert isinstance(task, Task)
+        for _task in self._instance.tasks:
+            assert isinstance(_task, Task)
 
 
 class TestTask(TestCase):
