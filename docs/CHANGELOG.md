@@ -1,3 +1,10 @@
+## [1.1.0-rc.1](https://github.com/savannahghi/sghi-commons/compare/v1.0.1...v1.1.0-rc.1) (2024-03-21)
+
+
+### Features
+
+* **task:** add a task decorator ([#23](https://github.com/savannahghi/sghi-commons/issues/23)) ([2ec9001](https://github.com/savannahghi/sghi-commons/commit/2ec9001a44a97131ecf9bc543dbafbaa30e3a3f3))
+
 ## [1.0.1](https://github.com/savannahghi/sghi-commons/compare/v1.0.0...v1.0.1) (2024-03-21)
 
 
