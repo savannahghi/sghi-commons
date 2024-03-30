@@ -436,3 +436,17 @@ class _NoOpRetry(Retry):
 exponential_backoff_retry = Retry.of_exponential_backoff
 
 noop_retry = Retry.of_noop
+
+
+# =============================================================================
+# MODULE EXPORTS
+# =============================================================================
+
+__all__ = [
+    "Retry",
+    "RetryError",
+    "exponential_backoff_retry",
+    "if_exception_type_factory",
+    "if_transient_exception",
+    "noop_retry",
+]
