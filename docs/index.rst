@@ -46,6 +46,7 @@ API Reference
      sghi.disposable
      sghi.exceptions
      sghi.registry
+     sghi.retry
      sghi.task
      sghi.typing
      sghi.utils
