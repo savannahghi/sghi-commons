@@ -1,3 +1,10 @@
+## [1.2.0](https://github.com/savannahghi/sghi-commons/compare/v1.1.0...v1.2.0) (2024-03-30)
+
+
+### Features
+
+* **retry:** add `Retry` policy interface ([#25](https://github.com/savannahghi/sghi-commons/issues/25)) ([14db0fd](https://github.com/savannahghi/sghi-commons/commit/14db0fd56865ce63ee6e763f097c9f4296240a0b))
+
 ## [1.2.0-rc.1](https://github.com/savannahghi/sghi-commons/compare/v1.1.0...v1.2.0-rc.1) (2024-03-30)
 
 
