@@ -67,6 +67,7 @@ nitpick_ignore = [
     ("py:class", "concurrent.futures._base.Executor"),  # sphinx can't find it
     ("py:class", "concurrent.futures._base.Future"),  # sphinx can't find it
     ("py:class", "sghi.dispatch._ST_contra"),  # private type annotations
+    ("py:class", "sghi.retry._RT"),  # private type annotations
     ("py:class", "sghi.task._IT"),  # private type annotations
     ("py:class", "sghi.task._OT"),  # private type annotations
     ("py:class", "sghi.utils.checkers._Comparable"),  # private type annotations
