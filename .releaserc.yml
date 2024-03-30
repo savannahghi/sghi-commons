@@ -74,7 +74,7 @@ presetConfig:
     - type: release
       hidden: true
     - type: test
-      section: hidden
+      hidden: true
 releaseRules:
   - type: chore
     scope: deps
