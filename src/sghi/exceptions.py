@@ -24,3 +24,7 @@ class SGHIError(Exception):
             or ``None`` if one wasn't given.
         """
         return self._message
+
+
+class SGHITransientError(SGHIError):
+    """An error that indicates a temporary failure."""
