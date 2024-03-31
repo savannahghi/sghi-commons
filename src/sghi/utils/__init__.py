@@ -1,6 +1,7 @@
 """Common utilities used throughout SGHI projects."""
 
 from .checkers import (
+    ensure_callable,
     ensure_greater_or_equal,
     ensure_greater_than,
     ensure_instance_of,
@@ -15,6 +16,7 @@ from .module_loading import import_string, import_string_as_klass
 from .others import future_succeeded, type_fqn
 
 __all__ = [
+    "ensure_callable",
     "ensure_greater_or_equal",
     "ensure_greater_than",
     "ensure_instance_of",
