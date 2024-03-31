@@ -5,6 +5,7 @@ import pytest
 import sghi.app
 from sghi.config import Config, ConfigProxy
 from sghi.utils import (
+    ensure_callable,
     ensure_greater_or_equal,
     ensure_greater_than,
     ensure_instance_of,
@@ -21,6 +22,47 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping, Sequence
 
     from sghi.typing import Comparable
+
+
+def test_ensure_callable_return_value_on_valid_input() -> None:
+    """
+    :func:`ensure_callable` should return the input value if the given
+    ``value`` is a callable.
+    """
+
+    class _Callable:
+        def __call__(self, *args, **kwargs) -> None: ...
+
+    a_callable = _Callable()
+
+    assert ensure_callable(callable) is callable
+    assert ensure_callable(type_fqn) is type_fqn
+    assert ensure_callable(_Callable) is _Callable
+    assert ensure_callable(a_callable) is a_callable
+
+
+def test_ensure_callable_fails_on_invalid_input() -> None:
+    """
+    :func:`ensure_callable` should raise a ``ValueError`` when the given
+    ``value`` is not a callable.
+    """
+    inputs: Iterable = ("", 45, None, [])
+
+    # With default message
+    default_msg: str = "A callable is required."
+    for value in inputs:
+        with pytest.raises(ValueError, match=default_msg) as exp_info:
+            ensure_callable(value)
+
+        assert exp_info.value.args[0] == default_msg
+
+    # Test with a custom message
+    custom_msg: str = "Would you please provide a callable."
+    for value in inputs:
+        with pytest.raises(ValueError, match=custom_msg) as exp_info:
+            ensure_callable(value, message=custom_msg)
+
+        assert exp_info.value.args[0] == custom_msg
 
 
 def test_ensure_greater_or_equal_return_value_on_valid_input() -> None:
