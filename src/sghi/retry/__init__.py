@@ -27,9 +27,9 @@ from typing_extensions import override
 
 from sghi.exceptions import SGHIError, SGHITransientError
 from sghi.utils import (
+    ensure_callable,
     ensure_greater_or_equal,
     ensure_greater_than,
-    ensure_predicate,
     type_fqn,
 )
 
@@ -289,11 +289,10 @@ class _ExponentialBackOffRetry(Retry):
         timeout: float | None = _DEFAULT_TIMEOUT,
         multiplicative_factor: float = _DEFAULT_MULTIPLICATIVE_FACTOR,
     ) -> None:
-        ensure_predicate(
-            callable(predicate),
+        self._predicate: _RetryPredicate = ensure_callable(
+            value=predicate,
             message="'predicate' MUST be a callable.",
         )
-        self._predicate: _RetryPredicate = predicate
         self._initial_delay: float = ensure_greater_than(
             value=initial_delay,
             base_value=0.0,
