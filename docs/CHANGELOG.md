@@ -1,3 +1,16 @@
+## [1.3.0-rc.1](https://github.com/savannahghi/sghi-commons/compare/v1.2.0...v1.3.0-rc.1) (2024-03-31)
+
+
+### Features
+
+* **checkers:** add a checker for callable objects ([#29](https://github.com/savannahghi/sghi-commons/issues/29)) ([0f8272d](https://github.com/savannahghi/sghi-commons/commit/0f8272de6f9ad13809599666ef8b78a34aab9853))
+
+
+### Refactors
+
+* **patch:** explicitly list `sghi.retry` module exports ([#28](https://github.com/savannahghi/sghi-commons/issues/28)) ([45cd87e](https://github.com/savannahghi/sghi-commons/commit/45cd87e7cf956d01a8ef12aef42dbd49dc3b8508))
+* refactor retry to use `ensure_callable` ([#30](https://github.com/savannahghi/sghi-commons/issues/30)) ([51511c8](https://github.com/savannahghi/sghi-commons/commit/51511c83eec7632bccc5f60e7eaf47f17dce9bf9))
+
 ## [1.2.0](https://github.com/savannahghi/sghi-commons/compare/v1.1.0...v1.2.0) (2024-03-30)
 
 
