@@ -19,6 +19,29 @@ _T = TypeVar("_T")
 # =============================================================================
 
 
+def ensure_callable(value: _T, message: str = "A callable is required.") -> _T:
+    """Check that the given value is a callable object (some kind of function).
+
+    A callable should have the same semantics as those defined by the
+    ``builtin.callable`` function to qualify. That is, it should be function or
+    method, a class or an instance of a class with a ``__call__`` method.
+
+    If ``value`` is NOT a callable, then a :exc:`ValueError` is raised; else
+    ``value`` is returned as is.
+
+    :param value: The object to check if it is a callable.
+    :param message: An optional error message to be shown when ``value`` is NOT
+        a callable.
+
+    :return: ``value`` if it is a callable.
+
+    :raise ValueError: If the given ``value`` is NOT a callable.
+    """
+    if not callable(value):
+        raise ValueError(message)
+    return value
+
+
 def ensure_greater_or_equal(
     value: _CT,
     base_value: Comparable,
