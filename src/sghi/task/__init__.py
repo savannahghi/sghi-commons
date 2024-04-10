@@ -16,7 +16,7 @@ from functools import reduce, update_wrapper
 from logging import Logger, getLogger
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, final
 
-from typing_extensions import override
+from typing_extensions import deprecated, override
 
 from ..disposable import Disposable, ResourceDisposedError
 from ..disposable import not_disposed as _nd_factory
@@ -224,6 +224,7 @@ class Chain(Task[Callable[[_IT], Any], "Chain[Any]"], Generic[_IT]):
         return Chain(bind(self._value))
 
 
+@deprecated("To be removed in v2.x")
 @final
 class Consume(Task[_IT, _IT], Generic[_IT]):
     """A :class:`Task` that applies an action to it's inputs.
@@ -231,6 +232,10 @@ class Consume(Task[_IT, _IT], Generic[_IT]):
     This ``Task`` wraps a callable and applies it to its input. It returns
     its input value as is on execution and is better suited for
     operations with side effects.
+
+    .. deprecated:: 1.4
+       To be removed in v2.
+
     """
 
     __slots__ = ("_accept",)
@@ -248,14 +253,18 @@ class Consume(Task[_IT, _IT], Generic[_IT]):
         ensure_callable(accept, "'accept' MUST be a callable.")
         self._accept: Callable[[_IT], Any] = accept
 
-    def __add__(self, __an_input: Callable[[_IT], Any], /) -> Consume[_IT]:
-        return self.and_then(accept=__an_input)
+    def __add__(self, __an_input: Callable[[_IT], Any], /) -> Consume[_IT]:  # type: ignore[reportDeprecated]
+        return self.and_then(accept=__an_input)  # type: ignore[reportDeprecated]
 
-    def and_then(self, accept: Callable[[_IT], Any]) -> Consume[_IT]:
+    @deprecated("To be removed in v2.x")
+    def and_then(self, accept: Callable[[_IT], Any]) -> Consume[_IT]:  # type: ignore[reportDeprecated]
         """Compose this :class:`Consume` action with the provided action.
 
         This creates a new ``Consume`` instance that performs both this task's
         action and the provided action.
+
+        .. deprecated:: 1.4
+           To be removed in v2.
 
         :param accept: The action to compose with this task's action. This
             MUST be a callable object.
@@ -270,7 +279,7 @@ class Consume(Task[_IT, _IT], Generic[_IT]):
             self._accept(an_input)
             accept(an_input)
 
-        return Consume(accept=_compose_accept)
+        return Consume(accept=_compose_accept)  # type: ignore[reportDeprecated]
 
     @override
     def execute(self, an_input: _IT) -> _IT:
@@ -339,7 +348,7 @@ class Pipe(Task[_IT, _OT], Generic[_IT, _OT]):
 
 chain = Chain
 
-consume = Consume
+consume = Consume  # type: ignore[reportDeprecated]
 
 pipe = Pipe
 
