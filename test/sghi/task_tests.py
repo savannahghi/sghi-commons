@@ -40,10 +40,10 @@ def test_task_decorator_fails_on_a_none_input_value() -> None:
     :func:`task` should raise a :exc:`ValueError` when given a ``None`` value.
     """
 
-    with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
+    with pytest.raises(ValueError, match="callable object") as exc_info:
         task(None)  # type: ignore
 
-    assert exc_info.value.args[0] == "The given callable MUST not be None."
+    assert exc_info.value.args[0] == "A callable object is required."
 
 
 def test_task_decorator_returns_correct_value() -> None:
@@ -109,10 +109,10 @@ class TestConsume(TestCase):
         :class:`consume` constructor should raise ``ValueError`` when given a
         ``None`` input.
         """
-        with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
+        with pytest.raises(ValueError, match="MUST be a callable") as exc_info:
             consume(accept=None)  # type: ignore
 
-        assert exc_info.value.args[0] == "'accept' MUST not be None."
+        assert exc_info.value.args[0] == "'accept' MUST be a callable."
 
     def test_execute_performs_the_expected_side_effects(self) -> None:
         """
@@ -217,10 +217,10 @@ class TestChain(TestCase):
         :meth:`chain.execute` method should raise a :exc:`ValueError` when
         invoked with a ``None`` argument.
         """
-        with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
+        with pytest.raises(ValueError, match="MUST be a callable") as exc_info:
             self._chain_of_10(None)  # type: ignore
 
-        assert exc_info.value.args[0] == "'an_input' MUST not be None."
+        assert exc_info.value.args[0] == "'an_input' MUST be a callable."
 
     def test_execute_return_value(self) -> None:
         """
@@ -492,10 +492,13 @@ class TestTask(TestCase):
         :meth:`Task.of_callable` should raise a :exc:`ValueError` when given a
         ``None`` callable as input.
         """
-        with pytest.raises(ValueError, match="MUST not be None.") as exc_info:
+        with pytest.raises(ValueError, match="MUST be a callable") as exc_info:
             Task.of_callable(source_callable=None)  # type: ignore
 
-        assert exc_info.value.args[0] == "'source_callable' MUST not be None."
+        assert (
+            exc_info.value.args[0]
+            == "'source_callable' MUST be a callable object."
+        )
 
     def test_of_callable_method_returns_expected_value(self) -> None:
         """
