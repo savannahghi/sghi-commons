@@ -12,7 +12,7 @@ from concurrent.futures import (
     ThreadPoolExecutor,
     wait,
 )
-from functools import reduce
+from functools import reduce, update_wrapper
 from logging import Logger, getLogger
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, final
 
@@ -21,9 +21,9 @@ from typing_extensions import override
 from ..disposable import Disposable, ResourceDisposedError
 from ..disposable import not_disposed as _nd_factory
 from ..utils import (
+    ensure_callable,
     ensure_not_none,
     ensure_not_none_nor_empty,
-    ensure_predicate,
     type_fqn,
 )
 
@@ -61,23 +61,26 @@ def _callables_to_tasks_as_necessary(
     """
     ensure_not_none(tasks, "'tasks' MUST not be None.")
     return tuple(
-        task if isinstance(task, Task) else Task.of_callable(task)
-        for task in tasks
+        task if isinstance(task, Task) else _OfCallable(task) for task in tasks
     )
 
 
 def task(f: Callable[[_IT], _OT]) -> Task[_IT, _OT]:
-    """Mark/Decorate a ``Callable`` object as a :class:`Task`.
+    """Mark/Decorate a callable object as a :class:`~sghi.task.Task`.
 
-    :param f: The callable object to be decorated. The callable *MUST* have at
-        *MOST* one required argument.
+    .. important::
 
-    :return: A ``Task`` instance that wraps the given ``Callable`` object.
+        The decorated callable *MUST* accept at least one argument but have
+        at *MOST* one required argument.
 
-    :raise ValueError: If the given value is ``None`` or not a ``Callable``.
+    :param f: The callable object to be decorated. The callable *MUST* accept
+        at least one argument but have at *MOST* one required argument.
+
+    :return: A ``Task`` instance that wraps the given callable object.
+
+    :raise ValueError: If the given value is NOT a callable.
     """
-    ensure_not_none(f, message="The given callable MUST not be None.")
-    ensure_predicate(callable(f), message="A callable object is required.")
+    ensure_callable(f, message="A callable object is required.")
 
     return _OfCallable(source_callable=f)
 
@@ -144,17 +147,22 @@ class Task(Generic[_IT, _OT], metaclass=ABCMeta):
     def of_callable(source_callable: Callable[[_IT], _OT]) -> Task[_IT, _OT]:
         """Create a :class:`~sghi.task.Task` instance from a callable.
 
-        .. note::
+        .. important::
 
-            The given callable *MUST* have at *MOST*, one required argument.
+            The given callable *MUST* accept at least one argument but have
+            at *MOST* one required argument.
 
         :param source_callable: The callable function to wrap as a ``Task``.
-            This *MUST* not be ``None``.
+            This *MUST* accept at least one argument but have at *MOST* one
+            required argument.
 
         :return: A ``Task`` instance.
 
-        :raises ValueError: If `source_callable` is ``None``.
+        :raises ValueError: If ``source_callable`` is NOT a callable.
+
+        .. seealso:: :func:`~sghi.task.task` decorator.
         """
+        # FIXME: rename 'source_callable' to 'target_callable' instead.
         return _OfCallable(source_callable=source_callable)
 
 
@@ -204,15 +212,15 @@ class Chain(Task[Callable[[_IT], Any], "Chain[Any]"], Generic[_IT]):
         result in a new ``Chain`` instance.
 
         :param an_input: A callable defining a transformation to be applied to
-            the wrapped value. This MUST not be ``None``.
+            the wrapped value.
 
         :return: A new ``Chain`` instance that wraps the result of the given
             transformation.
 
-        :raises ValueError: If the given transformation is ``None``.
+        :raises ValueError: If the given transformation is NOT a callable.
         """
         bind: Callable[[_IT], _OT]
-        bind = ensure_not_none(an_input, "'an_input' MUST not be None.")
+        bind = ensure_callable(an_input, "'an_input' MUST be a callable.")
         return Chain(bind(self._value))
 
 
@@ -234,10 +242,10 @@ class Consume(Task[_IT, _IT], Generic[_IT]):
         :param accept: A callable to apply to this task's inputs. This MUST not
             be None.
 
-        :raises ValueError: If the given callable is ``None``.
+        :raises ValueError: If the given callable is NOT a callable.
         """
         super().__init__()
-        ensure_not_none(accept, "'accept' MUST not be None.")
+        ensure_callable(accept, "'accept' MUST be a callable.")
         self._accept: Callable[[_IT], Any] = accept
 
     def __add__(self, __an_input: Callable[[_IT], Any], /) -> Consume[_IT]:
@@ -250,13 +258,13 @@ class Consume(Task[_IT, _IT], Generic[_IT]):
         action and the provided action.
 
         :param accept: The action to compose with this task's action. This
-            MUST be not None.
+            MUST be a callable object.
 
         :return: A new ``Consume`` instance that performs both actions.
 
-        :raises ValueError: If the given callable is ``None``.
+        :raises ValueError: If ``accept`` is NOT a callable.
         """
-        ensure_not_none(accept, "'accept' MUST not be None.")
+        ensure_callable(accept, "'accept' MUST be a callable.")
 
         def _compose_accept(an_input: _IT) -> None:
             self._accept(an_input)
@@ -283,8 +291,10 @@ class Pipe(Task[_IT, _OT], Generic[_IT, _OT]):
     def __init__(self, *tasks: Task[Any, Any] | Callable[[Any], Any]):
         """Create a new :class:`Pipe` instance of the given tasks.
 
-        :param tasks: A ``Sequence`` of the tasks to apply this pipe's inputs
-            to. This MUST not be empty.
+        :param tasks: A ``Sequence`` of the tasks or callables to apply this
+            pipe's inputs to. This MUST not be empty. If callables are given,
+            they MUST accept at least one argument but have at MOST one
+            required argument.
 
         :raises ValueError: If no tasks were specified, i.e. ``tasks`` is
             empty.
@@ -320,9 +330,9 @@ class Pipe(Task[_IT, _OT], Generic[_IT, _OT]):
         return cast(
             _OT,
             reduce(
-                lambda _acc, _tsk: _tsk(_acc),
+                lambda _acc, _tsk: _tsk.execute(_acc),
                 self.tasks[1:],
-                self.tasks[0](an_input),
+                self.tasks[0].execute(an_input),
             ),
         )
 
@@ -356,18 +366,21 @@ class ConcurrentExecutor(
     :external+python:py:class:`futures<concurrent.futures.Future>`
     representing the execution of the given tasks. If the
     ``wait_for_completion`` constructor parameter is set to ``True``, the
-    default, the `execute` method will block until all tasks have completed.
+    default, the :meth:`execute` method will block until all tasks have
+    completed.
 
     .. important::
 
         When ``wait_for_completion`` is set to ``False``, instances of this
         class should not be used as context managers. This is because the
-        underlying ``Executor`` will be shutdown immediately once ``execute``
-        returns.
+        underlying ``Executor`` will be shutdown immediately on exit of the
+        ``with`` block. This will happen regardless of the completion status
+        of the embedded tasks, leading to cancellations of those tasks, which
+        might not be the intended behaviour.
 
     .. tip::
 
-        By default, this tasks uses a
+        By default, instances of this class use a
         :external+python:py:class:`~concurrent.futures.ThreadPoolExecutor`
         to run the tasks concurrently. This is suitable for short `I/O-bound`
         tasks. However, for compute-intensive tasks, consider using a
@@ -396,8 +409,10 @@ class ConcurrentExecutor(
         """Initialize a new ``ConcurrentExecutor`` instance with the given
         properties.
 
-        :param tasks: The tasks to be executed concurrently. This MUST not be
-            ``None`` or empty.
+        :param tasks: The tasks or callables to be executed concurrently. This
+            MUST not be ``None`` or empty. If callables are given, they MUST
+            accept at least one argument but have at MOST one required
+            argument.
         :param wait_for_completion: Whether ``execute`` should block and wait
             for all the given tasks to complete execution. Defaults to
             ``True``.
@@ -509,11 +524,11 @@ class ConcurrentExecutor(
 
     @staticmethod
     def _accumulate(
-        partial_results: MutableSequence[Future[_OT]],
-        task_output: Future[_OT],
+        scheduled_tasks: MutableSequence[Future[_OT]],
+        new_submission: Future[_OT],
     ) -> MutableSequence[Future[_OT]]:
-        partial_results.append(task_output)
-        return partial_results
+        scheduled_tasks.append(new_submission)
+        return scheduled_tasks
 
     def _do_execute_task(self, task: Task[_IT, _OT], an_input: _IT) -> _OT:
         """Execute an individual :class:`Task` with the provided input.
@@ -526,7 +541,7 @@ class ConcurrentExecutor(
         :raises Exception: If the tasks execution encounters an exception.
         """
         try:
-            result: _OT = task(an_input)
+            result: _OT = task.execute(an_input)
         except Exception as exp:
             self._logger.error(
                 "Error while executing tasks of type='%s'.",
@@ -547,13 +562,17 @@ execute_concurrently = ConcurrentExecutor
 
 @final
 class _OfCallable(Task[_IT, _OT]):
-    __slots__ = ("_source_callable",)
+    __slots__ = ("_source_callable", "__dict__")
 
     def __init__(self, source_callable: Callable[[_IT], _OT]):
         super().__init__()
-        ensure_not_none(source_callable, "'source_callable' MUST not be None.")
+        ensure_callable(
+            source_callable,
+            message="'source_callable' MUST be a callable object.",
+        )
         self._source_callable: Callable[[_IT], _OT]
         self._source_callable = source_callable
+        update_wrapper(self, self._source_callable)
 
     @override
     def execute(self, an_input: _IT) -> _OT:
