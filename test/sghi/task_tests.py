@@ -91,7 +91,7 @@ class TestConsume(TestCase):
         collection2: set[int] = set()
 
         collector: consume[int]
-        collector = consume(collection1.append).and_then(collection2.add)
+        collector = consume(collection1.append).and_then(collection2.add)  # type: ignore[reportDeprecated]
 
         assert isinstance(collector, consume)
 
@@ -153,7 +153,7 @@ class TestConsume(TestCase):
 
         # Style 1, explicit invocation
         collector1: consume[int]
-        collector1 = consume(collection1.append).and_then(collection2.add)
+        collector1 = consume(collection1.append).and_then(collection2.add)  # type: ignore[reportDeprecated]
         # Style 2, using the plus operator
         collector2: consume[int]
         collector2 = consume(collection3.append) + collection4.add
