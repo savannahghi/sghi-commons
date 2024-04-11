@@ -23,8 +23,8 @@ classifiers = [
     "Typing :: Typed"
 ]
 dependencies = [
-    "importlib-metadata>=7.0.2",
-    "typing-extensions>=4.10.0",
+    "importlib-metadata>=7.1.0",
+    "typing-extensions>=4.11.0",
 ]
 description = "A collection of utilities used throughout SGHI's Python projects."
 dynamic = ["version"]
@@ -40,12 +40,12 @@ requires-python = ">=3.11" # Support Python 3.11+.
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit~=3.6.2",
+    "pre-commit~=3.7.0",
 ]
 
 docs = [
     "furo==2024.1.29",
-    "jaraco.packaging~=9.4.0",
+    "jaraco.packaging~=9.5.0",
     "rst.linker~=2.4.0",
     "Sphinx~=7.2.6",
     "sphinx-favicon~=1.0.1",
@@ -60,14 +60,14 @@ test = [
     "coveralls~=3.3.1",
     "factory-boy~=3.3.0",
     "packaging",
-    "pyright>=1.1.354",
+    "pyright>=1.1.358",
     "pytest~=8.1.1",
-    "pytest-cov~=4.1.0",
+    "pytest-cov~=5.0.0",
     "pytest-forked~=1.6.0",
     "pytest-sugar~=1.0.0",
     "pytest-xdist~=3.5.0",
-    "ruff~=0.3.3",
-    "tox~=4.14.1",
+    "ruff~=0.3.6",
+    "tox~=4.14.2",
     "tox-gh-actions~=3.2.0",
 ]
 
