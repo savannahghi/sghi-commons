@@ -675,3 +675,17 @@ class TestTask(TestCase):
 
         assert add_100(-100) == task1(-100) == 0
         assert multiply_by_10(100) == task2(100) == 1000
+
+    def test_of_identity_method_returns_expected_value(self) -> None:
+        """
+        :meth:`Task.of_identity` should return a ``Task`` instance that always
+        returns its input value as is.
+        """
+
+        a_reference: list[int] = list(range(5))
+
+        assert isinstance(Task.of_identity(), Task)
+        assert Task.of_identity()(5) == 5
+        assert Task.of_identity()("Hello, World!!") == "Hello, World!!"
+        assert Task.of_identity()(None) is None
+        assert Task.of_identity()(a_reference) is a_reference

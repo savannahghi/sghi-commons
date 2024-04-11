@@ -12,7 +12,7 @@ from concurrent.futures import (
     ThreadPoolExecutor,
     wait,
 )
-from functools import reduce, update_wrapper
+from functools import cache, reduce, update_wrapper
 from logging import Logger, getLogger
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, final, overload
 
@@ -283,6 +283,23 @@ class Task(Generic[_IT, _OT], metaclass=ABCMeta):
         """
         # FIXME: rename 'source_callable' to 'target_callable' instead.
         return _OfCallable(source_callable=source_callable)
+
+    @staticmethod
+    @cache
+    def of_identity() -> Task[_IT, _IT]:
+        """Return a  :class:`~sghi.task.Task` that always returns its input.
+
+        The returned ``Task`` always returns its input argument as is.
+
+        .. note::
+
+            The instances returned by this method are NOT guaranteed to be
+            distinct on each invocation.
+
+        :return: A ``Task`` instance that always returns its input argument
+            as is.
+        """
+        return _OfCallable(source_callable=lambda _v: _v)
 
 
 # =============================================================================
