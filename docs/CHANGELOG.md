@@ -1,3 +1,10 @@
+## [1.4.0-rc.2](https://github.com/savannahghi/sghi-commons/compare/v1.4.0-rc.1...v1.4.0-rc.2) (2024-04-11)
+
+
+### Dependency Updates
+
+* **deps:** upgrade project dependencies ([#40](https://github.com/savannahghi/sghi-commons/issues/40)) ([47c0bf8](https://github.com/savannahghi/sghi-commons/commit/47c0bf88f21fbbaa458c7aa70fda3bb147077b8a))
+
 ## [1.4.0-rc.1](https://github.com/savannahghi/sghi-commons/compare/v1.3.0...v1.4.0-rc.1) (2024-04-11)
 
 
