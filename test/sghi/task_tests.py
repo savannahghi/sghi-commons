@@ -79,130 +79,6 @@ def test_task_decorator_returns_expected_value() -> None:
     assert isinstance(int_to_str, Task)
 
 
-class TestConsume(TestCase):
-    """Tests for the :class:`consume` ``Task``."""
-
-    def test_and_then_method_returns_expected_value(self) -> None:
-        """:meth:`consume.and_then` method should return a new instance of
-        :class:`consume` that composes both the action of the current
-        ``consume`` instance and the new action.
-        """
-        collection1: list[int] = []
-        collection2: set[int] = set()
-
-        collector: consume[int]
-        collector = consume(collection1.append).and_then(collection2.add)  # type: ignore[reportDeprecated]
-
-        assert isinstance(collector, consume)
-
-        collector.execute(10)
-        assert len(collection1) == len(collection2) == 1
-
-        collector.execute(20)
-        assert len(collection1) == len(collection2) == 2
-
-        collector.execute(30)
-        assert len(collection1) == len(collection2) == 3
-
-    def test_instantiation_with_a_none_input_fails(self) -> None:
-        """
-        :class:`consume` constructor should raise ``ValueError`` when given a
-        ``None`` input.
-        """
-        with pytest.raises(ValueError, match="MUST be a callable") as exc_info:
-            consume(accept=None)  # type: ignore
-
-        assert exc_info.value.args[0] == "'accept' MUST be a callable."
-
-    def test_execute_performs_the_expected_side_effects(self) -> None:
-        """
-        :meth:`consume.execute` method should apply it's input to the wrapped
-        action only, i.e., it should perform it's intended side effects only.
-        """
-        results: list[int] = []
-        collector: consume[int] = consume(accept=results.append)
-
-        assert collector.execute(10) == 10
-        assert len(results) == 1
-        assert results[0] == 10
-
-        assert collector.execute(20) == 20
-        assert len(results) == 2
-        assert results[0] == 10
-        assert results[1] == 20
-
-        value: int = 30
-        assert collector.execute(value) == value
-        assert len(results) == 3
-        assert results[0] == 10
-        assert results[1] == 20
-        assert results[2] == value
-        assert value == 30  # value should not have changed
-
-    def test_different_and_then_method_invocation_styles_return_same_value(
-        self,
-    ) -> None:
-        """
-        :meth:`consume.execute` should return the same value regardless of how
-        it was invoked.
-        """
-        collection1: list[int] = []
-        collection2: set[int] = set()
-        collection3: list[int] = []
-        collection4: set[int] = set()
-
-        # Style 1, explicit invocation
-        collector1: consume[int]
-        collector1 = consume(collection1.append).and_then(collection2.add)  # type: ignore[reportDeprecated]
-        # Style 2, using the plus operator
-        collector2: consume[int]
-        collector2 = consume(collection3.append) + collection4.add
-
-        assert isinstance(collector1, consume)
-        assert isinstance(collector2, consume)
-
-        collector1(10)
-        collector2(10)
-        assert len(collection1) == len(collection2) == 1
-        assert len(collection3) == len(collection4) == 1
-
-        collector1(20)
-        collector1(30)
-        collector2(20)
-        collector2(30)
-        assert len(collection1) == len(collection2) == 3
-        assert len(collection3) == len(collection4) == 3
-
-    def test_different_execute_invocation_styles_return_same_value(
-        self,
-    ) -> None:
-        """
-        :meth:`consume.execute` should return the same value regardless of how
-        it was invoked.
-        """
-        results1: list[int] = []
-        collector1: consume[int] = consume(accept=results1.append)
-        results2: list[int] = []
-        collector2: consume[int] = consume(accept=results2.append)
-
-        # Style 1, explicit invocation
-        collector1.execute(10)
-        # Style 2, invoke as callable
-        collector2(10)
-
-        assert len(results1) == len(results2) == 1
-        assert results1[0] == results2[0] == 10
-
-        # Style 1, explicit invocation
-        collector1.execute(20)
-        # Style 2, invoke as callable
-        collector2(20)
-
-        assert len(results1) == len(results2) == 2
-        assert results1[0] == results2[0] == 10
-        assert results1[1] == results2[1] == 20
-
-
 class TestChain(TestCase):
     """Tests for the :class:`chain` ``Task``."""
 
@@ -431,6 +307,133 @@ class TestConcurrentExecutor(TestCase):
         return tce._do_io_bound_task(task_input * 3)
 
 
+class TestConsume(TestCase):
+    """Tests for the :class:`consume` ``Task``."""
+
+    def test_and_then_method_returns_expected_value(self) -> None:
+        """:meth:`consume.and_then` method should return a new instance of
+        :class:`consume` that composes both the action of the current
+        ``consume`` instance and the new action.
+        """
+        collection1: list[int] = []
+        collection2: set[int] = set()
+
+        collector: consume[int]
+        collector = consume(collection1.append).and_then(collection2.add)  # type: ignore[reportDeprecated]
+
+        assert isinstance(collector, consume)
+
+        collector.execute(10)
+        assert len(collection1) == len(collection2) == 1
+
+        collector.execute(20)
+        assert len(collection1) == len(collection2) == 2
+
+        collector.execute(30)
+        assert len(collection1) == len(collection2) == 3
+
+        # Should delegate to `Task.and_then` when given a `Task` instance.
+        assert isinstance(collector.and_then(task(collection2.add)), Task)
+
+    def test_instantiation_with_a_none_input_fails(self) -> None:
+        """
+        :class:`consume` constructor should raise ``ValueError`` when given a
+        ``None`` input.
+        """
+        with pytest.raises(ValueError, match="MUST be a callable") as exc_info:
+            consume(accept=None)  # type: ignore
+
+        assert exc_info.value.args[0] == "'accept' MUST be a callable."
+
+    def test_execute_performs_the_expected_side_effects(self) -> None:
+        """
+        :meth:`consume.execute` method should apply it's input to the wrapped
+        action only, i.e., it should perform it's intended side effects only.
+        """
+        results: list[int] = []
+        collector: consume[int] = consume(accept=results.append)
+
+        assert collector.execute(10) == 10
+        assert len(results) == 1
+        assert results[0] == 10
+
+        assert collector.execute(20) == 20
+        assert len(results) == 2
+        assert results[0] == 10
+        assert results[1] == 20
+
+        value: int = 30
+        assert collector.execute(value) == value
+        assert len(results) == 3
+        assert results[0] == 10
+        assert results[1] == 20
+        assert results[2] == value
+        assert value == 30  # value should not have changed
+
+    def test_different_and_then_method_invocation_styles_return_same_value(
+        self,
+    ) -> None:
+        """
+        :meth:`consume.execute` should return the same value regardless of how
+        it was invoked.
+        """
+        collection1: list[int] = []
+        collection2: set[int] = set()
+        collection3: list[int] = []
+        collection4: set[int] = set()
+
+        # Style 1, explicit invocation
+        collector1: consume[int]
+        collector1 = consume(collection1.append).and_then(collection2.add)  # type: ignore[reportDeprecated]
+        # Style 2, using the plus operator
+        collector2: consume[int]
+        collector2 = consume(collection3.append) + collection4.add
+
+        assert isinstance(collector1, consume)
+        assert isinstance(collector2, consume)
+
+        collector1(10)
+        collector2(10)
+        assert len(collection1) == len(collection2) == 1
+        assert len(collection3) == len(collection4) == 1
+
+        collector1(20)
+        collector1(30)
+        collector2(20)
+        collector2(30)
+        assert len(collection1) == len(collection2) == 3
+        assert len(collection3) == len(collection4) == 3
+
+    def test_different_execute_invocation_styles_return_same_value(
+        self,
+    ) -> None:
+        """
+        :meth:`consume.execute` should return the same value regardless of how
+        it was invoked.
+        """
+        results1: list[int] = []
+        collector1: consume[int] = consume(accept=results1.append)
+        results2: list[int] = []
+        collector2: consume[int] = consume(accept=results2.append)
+
+        # Style 1, explicit invocation
+        collector1.execute(10)
+        # Style 2, invoke as callable
+        collector2(10)
+
+        assert len(results1) == len(results2) == 1
+        assert results1[0] == results2[0] == 10
+
+        # Style 1, explicit invocation
+        collector1.execute(20)
+        # Style 2, invoke as callable
+        collector2(20)
+
+        assert len(results1) == len(results2) == 2
+        assert results1[0] == results2[0] == 10
+        assert results1[1] == results2[1] == 20
+
+
 class TestPipe(TestCase):
     """Tests for the :class:`pipe` ``Task``."""
 
@@ -486,6 +489,123 @@ class TestPipe(TestCase):
 
 class TestTask(TestCase):
     """Tests of the :class:`Task` interface default method implementations."""
+
+    def test_and_then_fails_on_none_task_input(self) -> None:
+        """
+        :meth:`Task.and_then` should raise a :exc:`TypeError` when given a
+        value that is not a ``Task`` instance.
+        """
+        add_100: Task[int, int] = task(partial(operator.add, 100))
+        mul_by_10: Callable[[int], int] = partial(operator.mul, 10)
+
+        with pytest.raises(TypeError, match="sghi.task.Task") as exc_info:
+            add_100.and_then(mul_by_10)  # type: ignore
+
+        assert (
+            exc_info.value.args[0]
+            == "'after' MUST be an 'sghi.task.Task' instance."
+        )
+
+    def test_and_then_returns_expected_value(self) -> None:
+        """
+        :meth:`Task.and_then` should return a new ``Task` instance that chains
+        the given task to the principal.
+        """
+
+        add_100: Task[int, int] = task(partial(operator.add, 100))
+        mul_by_10: Task[int, int] = task(partial(operator.mul, 10))
+        int_to_str: Task[int, str] = task(str)
+
+        chained: Task[int, str] = add_100.and_then(mul_by_10).and_then(
+            int_to_str
+        )
+
+        assert isinstance(chained, Task)
+        assert chained(50) == "1500"
+
+    def test_compose_fails_on_none_task_input(self) -> None:
+        """
+        :meth:`Task.compose` should raise a :exc:`TypeError` when given a
+        value that is not a ``Task`` instance.
+        """
+        int_from_str: Callable[[str], int] = int
+        add_100: Task[int, int] = task(partial(operator.add, 100))
+
+        with pytest.raises(TypeError, match="sghi.task.Task") as exc_info:
+            add_100.compose(int_from_str)  # type: ignore
+
+        assert (
+            exc_info.value.args[0]
+            == "'before' MUST be an 'sghi.task.Task' instance."
+        )
+
+    def test_compose_returns_expected_value(self) -> None:
+        """
+        :meth:`Task.compose` should return a new ``Task` instance that
+        composes the given task to the principal.
+        """
+
+        int_from_str: Task[str, int] = task(int)
+        add_100: Task[int, int] = task(partial(operator.add, 100))
+        mul_by_10: Task[int, int] = task(partial(operator.mul, 10))
+
+        composed: Task[str, int] = add_100.compose(mul_by_10).compose(
+            int_from_str
+        )
+
+        assert isinstance(composed, Task)
+        assert composed("50") == 600
+
+    def test_lshift_fails_on_none_task_input(self) -> None:
+        """
+        The ``<<`` operator should raise a :exc:`TypeError` when applied to a
+        value that is not a ``Task`` instance.
+        """
+        int_from_str: Callable[[str], int] = int
+        add_100: Task[int, int] = task(partial(operator.add, 100))
+
+        with pytest.raises(TypeError):
+            add_100 << int_from_str  # type: ignore
+
+    def test_lshift_operator_returns_expected_value(self) -> None:
+        """
+        The ``<<`` operator should result in a new ``Task` instance that
+        composes the given task to the principal.
+        """
+
+        int_from_str: Task[str, int] = task(int)
+        add_100: Task[int, int] = task(partial(operator.add, 100))
+        mul_by_10: Task[int, int] = task(partial(operator.mul, 10))
+
+        composed: Task[str, int] = add_100 << mul_by_10 << int_from_str
+
+        assert isinstance(composed, Task)
+        assert composed("50") == 600
+
+    def test_rshift_fails_on_none_task_input(self) -> None:
+        """
+        The ``>>`` operator should raise a :exc:`TypeError` when applied to a
+        value that is not a ``Task`` instance.
+        """
+        add_100: Task[int, int] = task(partial(operator.add, 100))
+        mul_by_10: Callable[[int], int] = partial(operator.mul, 10)
+
+        with pytest.raises(TypeError):
+            add_100 >> mul_by_10  # type: ignore
+
+    def test_rshift_operator_return_expected_value(self) -> None:
+        """
+        The ``>>`` operator should result in a new ``Task` instance that
+        chains the given task to the principal.
+        """
+        add_100: Task[int, int] = task(partial(operator.add, 100))
+        mul_by_10: Task[int, int] = task(partial(operator.mul, 10))
+        int_to_str: Task[int, str] = task(str)
+
+        chained: Task[int, str] = add_100 >> mul_by_10 >> int_to_str
+
+        assert isinstance(chained, Task)
+        assert chained(50) == "1500"
 
     def test_of_callable_fails_on_none_input_value(self) -> None:
         """
