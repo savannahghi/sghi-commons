@@ -1,3 +1,28 @@
+## [1.4.0](https://github.com/savannahghi/sghi-commons/compare/v1.3.0...v1.4.0) (2024-04-11)
+
+
+### Bug Fixes
+
+* **task:** assorted fixes for `sghi.task` module ([#34](https://github.com/savannahghi/sghi-commons/issues/34)) ([f7fd150](https://github.com/savannahghi/sghi-commons/commit/f7fd1509f16a27458d2547d0dcd501eb1adb0996))
+
+
+### Dependency Updates
+
+* **deps:** upgrade project dependencies ([#40](https://github.com/savannahghi/sghi-commons/issues/40)) ([47c0bf8](https://github.com/savannahghi/sghi-commons/commit/47c0bf88f21fbbaa458c7aa70fda3bb147077b8a))
+
+
+### Features
+
+* **task:** add `sghi.task.Task` composition support ([#36](https://github.com/savannahghi/sghi-commons/issues/36)) ([53ca0fb](https://github.com/savannahghi/sghi-commons/commit/53ca0fb3e55a4483aa0c671147430f9cd1695e72))
+* **task:** add a new task, `sghi.task.Supplier` ([#37](https://github.com/savannahghi/sghi-commons/issues/37)) ([d06824f](https://github.com/savannahghi/sghi-commons/commit/d06824f9a728575a3f28698d1c4c6b97805ef680))
+* **task:** add an identity `Task` factory ([#38](https://github.com/savannahghi/sghi-commons/issues/38)) ([05ae633](https://github.com/savannahghi/sghi-commons/commit/05ae633d513888ced4f38474e6fe0d96abb72138))
+
+
+### Refactors
+
+* **patch:** deprecate `sghi.task.Consume` for removal ([#35](https://github.com/savannahghi/sghi-commons/issues/35)) ([0ff6c46](https://github.com/savannahghi/sghi-commons/commit/0ff6c463d61917d5e0b3fb3f4c0daceb16b3ac71))
+* **task:** improve `sghi.task` module typings ([#33](https://github.com/savannahghi/sghi-commons/issues/33)) ([a393453](https://github.com/savannahghi/sghi-commons/commit/a39345378a9ba8a18de16652ec4426b64bb94c73))
+
 ## [1.4.0-rc.2](https://github.com/savannahghi/sghi-commons/compare/v1.4.0-rc.1...v1.4.0-rc.2) (2024-04-11)
 
 
