@@ -354,7 +354,6 @@ class Consume(Task[_IT, _IT], Generic[_IT]):
 
     .. deprecated:: 1.4
        To be removed in v2.
-
     """
 
     __slots__ = ("_accept",)
@@ -475,11 +474,65 @@ class Pipe(Task[_IT, _OT], Generic[_IT, _OT]):
         )
 
 
+@final
+class Supplier(Task[None, _OT], Generic[_OT]):
+    """A specialized :class:`Task` that supplies/provides a result.
+
+    This subclass of ``Task`` represents a task that provides a result without
+    needing any input value. It wraps/decorates a callable that returns the
+    desired output.
+
+    .. versionadded:: 1.4
+    """
+
+    __slots__ = ("_source_callable", "__dict__")
+
+    def __init__(self, source_callable: Callable[[], _OT]):
+        """Create a ``Supplier`` instance that wraps the provided callable.
+
+        :param source_callable: A callable object that takes no arguments and
+            returns the desired result.
+
+        :raise TypeError: If ``source_callable`` is not a callable object.
+        """
+        super().__init__()
+        ensure_callable(
+            source_callable,
+            message="'source_callable' MUST be a callable object.",
+        )
+        self._source_callable: Callable[[], _OT]
+        self._source_callable = source_callable
+        update_wrapper(self, self._source_callable)
+
+    @override
+    def __call__(self, an_input: None = None) -> _OT:
+        return self.execute()
+
+    @override
+    def execute(self, an_input: None = None) -> _OT:
+        """Retrieve and return a result/value.
+
+        This method overrides the base class ``execute`` and simply calls the
+        wrapped callable to retrieve the result. Since this is a ``Supplier``,
+        the argument to this method is ignored.
+
+        :param an_input: Unused parameter. Defaults to ``None``. This is only
+            here to maintain compatibility with the ``Task`` interface.
+
+        :return: The retrieved/supplied result.
+        """
+        return self._source_callable()
+
+
 chain = Chain
 
 consume = Consume  # type: ignore[reportDeprecated]
 
 pipe = Pipe
+
+supplier = Supplier
+
+supply = Supplier
 
 
 # =============================================================================
@@ -728,10 +781,13 @@ __all__ = [
     "ConcurrentExecutorDisposedError",
     "Consume",
     "Pipe",
+    "Supplier",
     "Task",
     "chain",
     "consume",
     "execute_concurrently",
     "pipe",
+    "supplier",
+    "supply",
     "task",
 ]
