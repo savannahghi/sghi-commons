@@ -1,6 +1,6 @@
 import operator
 import time
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from concurrent.futures import wait
 from functools import partial
 from typing import TYPE_CHECKING
@@ -15,6 +15,7 @@ from sghi.task import (
     chain,
     consume,
     pipe,
+    supplier,
     task,
 )
 from sghi.utils import ensure_greater_than, future_succeeded
@@ -335,10 +336,10 @@ class TestConsume(TestCase):
         # Should delegate to `Task.and_then` when given a `Task` instance.
         assert isinstance(collector.and_then(task(collection2.add)), Task)
 
-    def test_instantiation_with_a_none_input_fails(self) -> None:
+    def test_instantiation_with_a_none_callable_input_fails(self) -> None:
         """
         :class:`consume` constructor should raise ``ValueError`` when given a
-        ``None`` input.
+        none-callable input.
         """
         with pytest.raises(ValueError, match="MUST be a callable") as exc_info:
             consume(accept=None)  # type: ignore
@@ -485,6 +486,47 @@ class TestPipe(TestCase):
         """
         for _task in self._instance.tasks:
             assert isinstance(_task, Task)
+
+
+class TestSupplier(TestCase):
+    """Tests for the :class:`supplier` ``Task``."""
+
+    def test_instantiation_with_a_non_callable_input_fails(self) -> None:
+        """
+        :class:`consume` constructor should raise ``ValueError`` when given a
+        none-callable input.
+        """
+        with pytest.raises(ValueError, match="MUST be a callable") as exc_info:
+            supplier(source_callable=None)  # type: ignore
+
+        assert (
+            exc_info.value.args[0]
+            == "'source_callable' MUST be a callable object."
+        )
+
+    def test_usage_as_a_decorator_produces_the_expected_results(self) -> None:
+        """
+        :class:`supplier` should make a callable it decorates a ``Task``.
+        """
+
+        @supplier
+        def ints_supplier() -> Iterable[int]:
+            yield from range(5)
+
+        assert isinstance(ints_supplier, supplier)
+        assert tuple(ints_supplier()) == (0, 1, 2, 3, 4)
+
+    def test_execute_returns_the_expected_value(self) -> None:
+        """
+        :meth:`supplier.execute` should return the same value as it's wrapped
+        callable.
+        """
+
+        def ints_supplier() -> Iterable[int]:
+            yield from range(5)
+
+        _supplier = supplier(ints_supplier)
+        assert tuple(_supplier()) == tuple(ints_supplier()) == (0, 1, 2, 3, 4)
 
 
 class TestTask(TestCase):
