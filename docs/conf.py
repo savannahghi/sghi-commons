@@ -69,7 +69,9 @@ nitpick_ignore = [
     ("py:class", "sghi.dispatch._ST_contra"),  # private type annotations
     ("py:class", "sghi.retry._RT"),  # private type annotations
     ("py:class", "sghi.task._IT"),  # private type annotations
+    ("py:class", "sghi.task._IT1"),  # private type annotations
     ("py:class", "sghi.task._OT"),  # private type annotations
+    ("py:class", "sghi.task._OT1"),  # private type annotations
     ("py:class", "sghi.utils.checkers._Comparable"),  # private type annotations
     ("py:class", "sghi.utils.checkers._CT"),  # private type annotations
     ("py:class", "sghi.utils.checkers._ST"),  # private type annotations
