@@ -59,6 +59,10 @@ _DEFAULT_MULTIPLICATIVE_FACTOR: Final[float] = 2.0
 
 _DEFAULT_TIMEOUT: Final[float] = 60.0 * 5  # In seconds
 
+_EXPONENTIAL_BACKOFF_RETRY_LOGGER_NAME: Final[str] = (
+    f"{__name__}.exponential_backoff_retry"
+)
+
 
 # =============================================================================
 # EXCEPTIONS
@@ -293,11 +297,13 @@ class _ExponentialBackOffRetry(Retry):
             value=predicate,
             message="'predicate' MUST be a callable.",
         )
+        # noinspection PyTypeChecker
         self._initial_delay: float = ensure_greater_than(
             value=initial_delay,
             base_value=0.0,
             message="'initial_delay' MUST be greater than 0.",
         )
+        # noinspection PyTypeChecker
         self._maximum_delay: float = ensure_greater_or_equal(
             value=maximum_delay,
             base_value=initial_delay,
@@ -307,12 +313,15 @@ class _ExponentialBackOffRetry(Retry):
             ),
         )
         self._timeout: float | None = timeout
+        # noinspection PyTypeChecker
         self._multiplicative_factor: float = ensure_greater_than(
             value=multiplicative_factor,
             base_value=0.0,
             message="'multiplicative_factor' MUST be greater than 0.",
         )
-        self._logger: Logger = logging.getLogger(type_fqn(self.__class__))
+        self._logger: Logger = logging.getLogger(
+            _EXPONENTIAL_BACKOFF_RETRY_LOGGER_NAME
+        )
 
     @override
     def retry(self, f: Callable[_P, _RT]) -> Callable[_P, _RT]:
@@ -440,6 +449,7 @@ noop_retry = Retry.of_noop
 # =============================================================================
 # MODULE EXPORTS
 # =============================================================================
+
 
 __all__ = [
     "Retry",
