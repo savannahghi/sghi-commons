@@ -58,7 +58,10 @@ nitpick_ignore = [
     ("py:class", "_CT_contra"),  # type annotation not available at runtime
     ("py:class", "_DE"),  # type annotation only available when type checking
     ("py:class", "_DT"),  # type annotation only available when type checking
+    ("py:class", "_IT"),  # type annotation only available when type checking
     ("py:class", "_Initializer_Factory"),  # type annotation only available when type checking
+    ("py:class", "_OT"),  # type annotation only available when type checking
+    ("py:class", "_OT1"),  # type annotation only available when type checking
     ("py:class", "_P"),  # type annotation only available when type checking
     ("py:class", "_RT"),  # type annotation only available when type checking
     ("py:class", "Chain[Any]"),  # Used as type annotation. Only available when type checking
