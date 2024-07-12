@@ -1,9 +1,17 @@
+from __future__ import annotations
+
+import operator
 from concurrent.futures import Future
+from functools import partial
+from typing import TYPE_CHECKING
 
 import pytest
 
 from sghi.disposable import Disposable, ResourceDisposedError, not_disposed
 from sghi.utils import future_succeeded, type_fqn
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 def test_future_succeeded_fails_on_none_input() -> None:
@@ -35,6 +43,26 @@ def test_future_succeeded_return_value_when_given_failed_futures() -> None:
 
     assert future.exception() is not None
     assert not future_succeeded(future)
+
+
+def test_type_fqn_return_value_when_given_non_top_level_callables() -> None:
+    """:func:`type_fqn` should return the module name plus the representation
+    of an object when given a callable instance instead of a top-level function
+    or type.
+    """
+    add_10: Callable[[int], int] = partial(operator.add, 10)
+
+    class ACallable:
+        def __call__(self) -> None: ...
+
+        def __repr__(self) -> str:
+            return "CallableObject()"
+
+    a_callable = ACallable()
+
+    # noinspection PyUnresolvedReferences
+    assert type_fqn(add_10) == f"{add_10.__module__}.{add_10!r}"
+    assert type_fqn(a_callable) == f"{a_callable.__module__}.CallableObject()"
 
 
 def test_future_succeeded_return_value_when_given_successful_futures() -> None:
