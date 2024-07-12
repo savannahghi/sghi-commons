@@ -358,7 +358,7 @@ class Config(metaclass=ABCMeta):
         This factory will also include initializers marked using the
         :func:`register` decorator by default, .i.e, those returned by the
         :func:`get_registered_initializer_factories` function. This can be
-        disabled byvsetting the ``skip_registered_initializers`` parameter to
+        disabled by setting the ``skip_registered_initializers`` parameter to
         ``True``.
 
         :param settings: The configurations/settings to use as a mapping.

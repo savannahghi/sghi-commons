@@ -105,12 +105,12 @@ class RetryError(SGHIError):
 def if_exception_type_factory(
     *exp_types: type[BaseException],
 ) -> _RetryPredicate:
-    """Create a retry predicate for the given exception types.
+    """Create a retry predicate for the given exception type(s).
 
-    :param exp_types: The exception types to check for.
+    :param exp_types: The exception type(s) to check for.
 
     :return: A callable that takes an exception and returns ``True`` if the
-        provided exception is of the given types.
+        provided exception is of the given type(s).
     """
     _exp: BaseException
     return lambda _exp: isinstance(_exp, exp_types)
@@ -363,10 +363,10 @@ class _ExponentialBackOffRetry(Retry):
     def _calculate_deadline_time(self) -> datetime | None:
         """Determine and return the time when the last retry should be made.
 
-        This method is should only be called once per :class:`Retry <retry>`
-        instance. Return the calculated timeout time or ``None`` to indicate
-        that the callable should be retried indefinitely until a successful
-        call is made.
+        This method is only called once per :class:`Retry <retry>` operation.
+        Return the calculated timeout time or ``None`` to indicate that the
+        callable should be retried indefinitely until a successful call is
+        made.
 
         :return: The calculated timeout time or ``None``.
         """

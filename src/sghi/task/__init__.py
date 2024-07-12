@@ -140,7 +140,7 @@ class Task(Generic[_IT, _OT], metaclass=ABCMeta):
         """
         return self.execute(an_input)
 
-    def __lshift__(self, __before: Task[_IT1, _IT]) -> Task[_IT1, _OT]:
+    def __lshift__(self, __before: Task[_IT1, _IT], /) -> Task[_IT1, _OT]:
         """Compose two :class:`tasks<sghi.task.Task>` together.
 
         This operator creates a new task that performs the computation of the
@@ -235,7 +235,7 @@ class Task(Generic[_IT, _OT], metaclass=ABCMeta):
 
         Return a new ``Task`` that performs the computation of the given
         task before the computation of this task. The returned task first
-        :meth:`applies<execute>` the ``after`` task to its input, and then
+        :meth:`applies<execute>` the ``before`` task to its input, and then
         applies this task to the result. That is, the output of
         ``before.execute()`` becomes the input to ``self.execute()``.
 
@@ -363,7 +363,7 @@ class Chain(Task[Callable[[_IT], Any], "Chain[Any]"], Generic[_IT]):
 @deprecated("To be removed in v2.x")
 @final
 class Consume(Task[_IT, _IT], Generic[_IT]):
-    """A :class:`Task` that applies an action to it's inputs.
+    """A :class:`Task` that applies an action to its inputs.
 
     This ``Task`` wraps a callable and applies it to its input. It returns
     its input value as is on execution and is better suited for
@@ -377,7 +377,7 @@ class Consume(Task[_IT, _IT], Generic[_IT]):
 
     def __init__(self, accept: Callable[[_IT], Any]) -> None:
         """Initialize a new :class:`Consume` instance that applies the given
-        action to it's inputs.
+        action to its inputs.
 
         :param accept: A callable to apply to this task's inputs. This MUST not
             be None.
@@ -694,8 +694,8 @@ class ConcurrentExecutor(
 
         :return: None.
         """
-        self._executor.shutdown(wait=self._wait_for_completion)
         self._is_disposed = True
+        self._executor.shutdown(wait=self._wait_for_completion)
 
     @not_disposed
     @override
@@ -744,9 +744,9 @@ class ConcurrentExecutor(
         :param task: The ``Task`` to execute.
         :param an_input: The input to pass to the ``Task``.
 
-        :return: The result of the tasks's execution.
+        :return: The result of the task's execution.
 
-        :raises Exception: If the tasks execution encounters an exception.
+        :raises Exception: If the execution failed.
         """
         try:
             result: _OT = task.execute(an_input)
