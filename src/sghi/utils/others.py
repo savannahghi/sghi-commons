@@ -34,6 +34,12 @@ def future_succeeded(future: Future[Any]) -> bool:
 def type_fqn(klass: type[Any] | Callable[..., Any]) -> str:
     """Return the fully qualified name of a type or callable.
 
+    This function combines the ``__module__`` and ``__qualname__`` attributes
+    of the given type or callable to construct the fully qualified name of the
+    type or callable. When given a callable lacking the ``__qualname__``
+    attribute, the representation of the callable (value of ``repr(klass)``)
+    is used in place of ``__qualname__``.
+
     :param klass: A type or callable whose fully qualified name is to be
         determined. This MUST not be ``None``.
 
@@ -42,4 +48,9 @@ def type_fqn(klass: type[Any] | Callable[..., Any]) -> str:
     :raises ValueError: If ``klass`` is ``None``.
     """
     ensure_not_none(klass, "'klass' MUST not be None.")
-    return ".".join((klass.__module__, klass.__qualname__))
+    return ".".join(
+        (
+            klass.__module__ or "__UNKNOWN__",
+            getattr(klass, "__qualname__", repr(klass)),
+        )
+    )
