@@ -97,8 +97,8 @@ class Registry(metaclass=ABCMeta):
     A ``Registry`` also comes bundled with a :class:`~sghi.dispatch.Dispatcher`
     whose responsibility is to emit :class:`signals<Signal>` whenever changes
     to the registry are made. It allows other components to subscribe to these
-    signals and react accordingly. This dispatcher is accessible using the
-    :attr:`~sghi.registry.Registry.dispatcher` property.
+    signals and react accordingly. The bundled dispatcher can be accessed using
+    the :attr:`~sghi.registry.Registry.dispatcher` property.
 
     For a list of supported signals, see the
     :attr:`~sghi.registry.Registry.dispatcher` property docs.
@@ -185,7 +185,7 @@ class Registry(metaclass=ABCMeta):
         following signals:
 
         - :class:`RegistryItemSet` - This signal is emitted when either a new
-          item is added to the ``Registry``, or an existing item updated. It
+          item is added to the ``Registry``, or an existing item is updated. It
           includes information about the item's key and value.
         - :class:`RegistryItemRemoved` - This signal is emitted when an item is
           removed from the registry. It includes information about the item's
