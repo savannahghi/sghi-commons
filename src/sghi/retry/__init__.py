@@ -333,7 +333,7 @@ class _ExponentialBackOffRetry(Retry):
             for delay in self._exponential_delay_generator():
                 try:
                     return f(*args, **kwargs)
-                except Exception as exp:  # noqa: BLE001
+                except Exception as exp:
                     if not self._predicate(exp):
                         raise
                     last_exp = exp
