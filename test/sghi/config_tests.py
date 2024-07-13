@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 from unittest import TestCase
 
 import pytest
+from typing_extensions import override
 
 from sghi.config import (
     Config,
@@ -13,6 +16,7 @@ from sghi.config import (
     SettingRequiredError,
     get_registered_initializer_factories,
     register,
+    setting_initializer,
 )
 from sghi.utils import ensure_predicate
 
@@ -25,13 +29,21 @@ if TYPE_CHECKING:
 
 
 @register
+@setting_initializer(setting="DB_USERNAME")
+def db_username_initializer(username: str | None) -> str:
+    return username or "postgres"
+
+
+@register
 class DBPortInitializer(SettingInitializer):
     __slots__ = ()
 
     @property
+    @override
     def setting(self) -> str:
         return "DB_PORT"
 
+    @override
     def execute(self, an_input: int | str | None) -> int:
         match an_input:
             case None:
@@ -61,13 +73,16 @@ class DBPasswordInitializer(SettingInitializer):
     __slots__ = ()
 
     @property
+    @override
     def has_secrets(self) -> bool:
         return True
 
     @property
+    @override
     def setting(self) -> str:
         return "DB_PASSWORD"
 
+    @override
     def execute(self, an_input: str | None) -> str:
         if not an_input:
             _err_msg: str = f"'{self.setting}' is required."
@@ -85,9 +100,41 @@ def test_get_registered_initializer_factories_return_value() -> None:
     """:func:`get_registered_initializer_factories` should return all
     initializer factories decorated using the :func:`register` decorator.
     """
-    assert len(get_registered_initializer_factories()) == 1
+    assert len(get_registered_initializer_factories()) == 2
     for init_factory in get_registered_initializer_factories():
         assert isinstance(init_factory(), SettingInitializer)
+
+
+def test_setting_initializer_return_value() -> None:
+    """:func:`setting_initializer` should return a factory function that
+    supplies ``SettingInitializer`` instances with the same properties as those
+    supplied on the decorator and the same semantics as the decorated function.
+    """
+
+    @setting_initializer(setting="USERNAME", has_secrets=True)
+    def username_initializer(username: str | None) -> str:
+        if not username:
+            _err_msg: str = "'USERNAME' MUST NOT be a None nor empty string."
+            raise SettingRequiredError(setting="USERNAME", message=_err_msg)
+        return username
+
+    initializer1: SettingInitializer = username_initializer()
+    initializer2: SettingInitializer = db_username_initializer()
+
+    assert isinstance(initializer1, SettingInitializer)
+    assert isinstance(initializer2, SettingInitializer)
+    assert initializer1.has_secrets
+    assert not initializer2.has_secrets
+    assert initializer1.setting == "USERNAME"
+    assert initializer2.setting == "DB_USERNAME"
+
+    assert initializer1("C-3PO") == "C-3PO"
+    with pytest.raises(SettingRequiredError) as exc_info:
+        initializer1(None)
+    assert exc_info.value.setting == "USERNAME"
+
+    assert initializer2(None) == "postgres"
+    assert initializer2("app-db-admin") == "app-db-admin"
 
 
 class TestConfig(TestCase):
