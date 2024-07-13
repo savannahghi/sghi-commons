@@ -1,3 +1,26 @@
+## [1.5.0-rc.1](https://github.com/savannahghi/sghi-commons/compare/v1.4.0...v1.5.0-rc.1) (2024-07-13)
+
+
+### Bug Fixes
+
+* assorted fixes and improvements ([#44](https://github.com/savannahghi/sghi-commons/issues/44)) ([c6f2723](https://github.com/savannahghi/sghi-commons/commit/c6f2723e19115f9ba3e379a9aaa75eb8cd1dee7b))
+
+
+### Dependency Updates
+
+* **deps:** upgrade project dependencies ([#46](https://github.com/savannahghi/sghi-commons/issues/46)) ([d4cef75](https://github.com/savannahghi/sghi-commons/commit/d4cef750f16b17f00dab09a8a40142735342e72d))
+
+
+### Features
+
+* **config:** add `setting_initializer` decorator ([#45](https://github.com/savannahghi/sghi-commons/issues/45)) ([334f6be](https://github.com/savannahghi/sghi-commons/commit/334f6be583bd481708de32db90d40ceb716eb2e4))
+* **utils:** make `type_fqn` support callable instances ([#43](https://github.com/savannahghi/sghi-commons/issues/43)) ([b22c835](https://github.com/savannahghi/sghi-commons/commit/b22c835cb0e58d25ca6554b019059d14fb7de108))
+
+
+### Refactors
+
+* **retry:** rename the `exponential_backoff_retry` logger ([#42](https://github.com/savannahghi/sghi-commons/issues/42)) ([de03e2c](https://github.com/savannahghi/sghi-commons/commit/de03e2c5c24ba00a2e30b5e7fb790b2874f6e101))
+
 ## [1.4.0](https://github.com/savannahghi/sghi-commons/compare/v1.3.0...v1.4.0) (2024-04-11)
 
 
