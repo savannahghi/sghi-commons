@@ -5,12 +5,21 @@ from __future__ import annotations
 import logging
 from abc import ABCMeta, abstractmethod
 from collections.abc import Callable
+from functools import update_wrapper, wraps
 from logging import Logger
 from typing import TYPE_CHECKING, Any, Final, final
 
+from typing_extensions import override
+
 from ..exceptions import SGHIError
 from ..task import Task, pipe
-from ..utils import ensure_not_none, ensure_not_none_nor_empty, type_fqn
+from ..utils import (
+    ensure_callable,
+    ensure_instance_of,
+    ensure_not_none,
+    ensure_not_none_nor_empty,
+    type_fqn,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -72,6 +81,80 @@ def register(f: _Initializer_Factory) -> _Initializer_Factory:
     """
     _INITIALIZERS_REGISTRY.add(ensure_not_none(f, "'f' MUST not be None."))
     return f
+
+
+def setting_initializer(
+    *,
+    setting: str,
+    has_secrets: bool = False,
+) -> Callable[[Callable[[Any], Any]], _Initializer_Factory]:
+    """Mark/Decorate a callable as a :class:`~sghi.config.SettingInitializer`.
+
+    This decorator converts a callable into a factory function that supplies
+    ``SettingInitializer`` instances with the same behaviour/semantics as the
+    decorated function. The decorator is designed to be used together with the
+    :meth:`@register<sghi.config.register>` decorator.
+
+    .. important::
+
+        The decorated callable *MUST* accept at least one argument but have
+        at *MOST* one required argument.
+
+    .. note::
+
+        This decorator returns a factory function and NOT a
+        ``SettingInitializer``. To get a ``SettingInitializer`` instance,
+        invoke the decorated function without providing any arguments. See the
+        usage example below.
+
+    Here's a usage example:
+
+    .. code-block:: python
+       :linenos:
+
+        from sghi.config import *
+
+
+        @register  # This is optional
+        @setting_initializer(setting="USERNAME", has_secrets=True)
+        def username_initializer(username: str | None) -> str:
+            if not username:
+                err_msg: str = "'USERNAME' MUST be provided."
+                raise SettingRequiredError(setting="USERNAME", message=err_msg)
+            return username
+
+
+        # Get a `SettingInitializer` instance
+        initializer = username_initializer()
+        assert isinstance(initializer, SettingInitializer)
+        initializer("C-3PO")  # OK
+        initializer(None)  # Error: SettingRequiredError
+
+    :param setting: The setting to be initialized using the resulting
+        ``SettingInitializer``. This MUST be a non-empty string.
+    :param has_secrets: A flag indicating whether the setting to be initialized
+        contains sensitive information. This MUST be a boolean value. Defaults
+        to ``False``.
+
+    :return: A factory function that supplies ``SettingInitializer`` instances
+        with the same behaviour/semantics as the decorated callable.
+    """
+
+    def wrap(f: Callable[[Any], Any]) -> _Initializer_Factory:
+        @wraps(
+            f,
+            assigned=("__module__", "__name__", "__qualname__", "__doc__"),
+        )
+        def setting_initializer_factory() -> SettingInitializer:
+            return _SettingInitializeOfCallable(
+                source_callable=f,
+                setting=setting,
+                has_secrets=has_secrets,
+            )
+
+        return setting_initializer_factory
+
+    return wrap
 
 
 # =============================================================================
@@ -226,6 +309,57 @@ class SettingInitializer(Task[Any, Any], metaclass=ABCMeta):
 
         :return: The setting to be initialized using this initializer.
         """
+
+
+# =============================================================================
+# SETTING INITIALIZER IMPLEMENTATIONS
+# =============================================================================
+
+
+@final
+class _SettingInitializeOfCallable(SettingInitializer):
+    __slots__ = ("_source_callable", "_setting", "_has_secretes", "__dict__")
+
+    def __init__(
+        self,
+        source_callable: Callable[[Any], Any],
+        setting: str,
+        has_secrets: bool = False,
+    ):
+        super().__init__()
+        self._source_callable: Callable[[Any], Any]
+        self._source_callable = ensure_callable(
+            source_callable,
+            message="'source_callable' MUST be a callable object.",
+        )
+        self._setting: str = ensure_not_none_nor_empty(
+            value=ensure_instance_of(
+                value=setting,
+                klass=str,
+                message="'setting' MUST be a string.",
+            ),
+            message="'setting' MUST NOT be an empty string.",
+        )
+        self._has_secrets: bool = ensure_instance_of(
+            value=has_secrets,
+            klass=bool,
+            message="'has_secrets' MUST be a boolean value.",
+        )
+        update_wrapper(self, self._source_callable)
+
+    @property
+    @override
+    def has_secrets(self) -> bool:
+        return self._has_secrets
+
+    @property
+    @override
+    def setting(self) -> str:
+        return self._setting
+
+    @override
+    def execute(self, an_input: Any) -> Any:
+        return self._source_callable(an_input)
 
 
 # =============================================================================
@@ -468,15 +602,18 @@ class ConfigProxy(Config):
         ensure_not_none(source_config, "'source_config' MUST not be None.")
         self._source_config: Config = source_config
 
+    @override
     def __contains__(self, __setting: str, /) -> bool:
         """Check for the availability of a setting."""
         return self._source_config.__contains__(__setting)
 
-    def __getattr__(self, __setting: str, /) -> Any:  # noqa: ANN401
+    @override
+    def __getattr__(self, __setting: str, /) -> Any:
         """Make settings available using the dot operator."""
         return self._source_config.__getattr__(__setting)
 
-    def get(self, setting: str, default: Any = None) -> Any:  # noqa: ANN401
+    @override
+    def get(self, setting: str, default: Any = None) -> Any:
         return self._source_config.get(setting=setting, default=default)
 
     def set_source(self, source_config: Config) -> None:
@@ -533,18 +670,21 @@ class _ConfigImp(Config):
         self._logger: Logger = logging.getLogger(type_fqn(self.__class__))
         self._run_initializers()
 
+    @override
     def __contains__(self, __setting: str, /) -> bool:
         """Check for the availability of a setting."""
         return self._settings.__contains__(__setting)
 
-    def __getattr__(self, __setting: str, /) -> Any:  # noqa: ANN401
+    @override
+    def __getattr__(self, __setting: str, /) -> Any:
         """Make settings available using the dot operator."""
         try:
             return self._settings[__setting]
         except KeyError:
             raise NoSuchSettingError(setting=__setting) from None
 
-    def get(self, setting: str, default: Any = None) -> Any:  # noqa: ANN401
+    @override
+    def get(self, setting: str, default: Any = None) -> Any:
         """Retrieve the value of the given setting or return the given default
         if no such setting exists in this ``Config`` instance.
 
@@ -620,6 +760,7 @@ class _NotSetup(Config):
         """
         self._err_msg: str | None = err_msg
 
+    @override
     def __contains__(self, __setting: str, /) -> bool:
         """Raise a ``NotSetupError`` when trying to check for the availability
         of a setting.
@@ -631,7 +772,8 @@ class _NotSetup(Config):
         """
         return self._raise(err_msg=self._err_msg)
 
-    def __getattr__(self, __setting: str, /) -> Any:  # noqa: ANN401
+    @override
+    def __getattr__(self, __setting: str, /) -> Any:
         """Raise a ``NotSetupError`` when trying to access any setting.
 
         :param __setting: The name of the setting value to retrieve.
@@ -642,7 +784,8 @@ class _NotSetup(Config):
         """
         return self._raise(err_msg=self._err_msg)
 
-    def get(self, setting: str, default: Any = None) -> Any:  # noqa: ANN401
+    @override
+    def get(self, setting: str, default: Any = None) -> Any:
         """Raise a ``NotSetupError`` when trying to access any setting.
 
         :param setting: The name of the setting value to retrieve.
@@ -686,4 +829,5 @@ __all__ = [
     "SettingRequiredError",
     "get_registered_initializer_factories",
     "register",
+    "setting_initializer",
 ]
