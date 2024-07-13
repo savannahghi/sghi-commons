@@ -36,8 +36,8 @@ class NoSuchRegistryItemError(SGHIError, LookupError):
         super().__init__(
             message=message
             or (
-                "Item with key '%s' does not exist in the registry."
-                % self._item_key
+                f"Item with key '{self._item_key}' does not exist in the "
+                "registry."
             ),
         )
 

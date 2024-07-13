@@ -50,7 +50,7 @@ and return ``None``.
 # =============================================================================
 
 
-class Signal(metaclass=ABCMeta):
+class Signal(metaclass=ABCMeta):  # noqa: B024
     """An occurrence of interest.
 
     This class serves as a base for defining custom ``Signal`` classes that

@@ -12,14 +12,14 @@ repos:
       - id: check-yaml
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
         args:
           - --py311-plus
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.3.6
+    rev: v0.5.1
     hooks:
       - id: ruff
         args:
