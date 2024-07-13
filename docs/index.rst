@@ -13,6 +13,8 @@ sghi-commons is a collection of reusable components and utilities used
 throughout `SavannahGHI Python projects <sghi_github_py_projects_>`_.
 They include utilities such as:
 
+- Utilities for working with resources that require freeing or cleanup after use.
+- Components and utilities for defining retry policies, allowing applications to retry operations that might fail due to transient errors.
 - Components for defining and accessing application configurations.
 - A registry component for storing key-value pairs.
 - A signal dispatcher inspired by `PyDispatch <https://grass.osgeo.org/grass83/manuals/libpython/pydispatch.html>`_ and `Django Dispatch <https://docs.djangoproject.com/en/dev/topics/signals/>`_.
