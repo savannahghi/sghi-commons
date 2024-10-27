@@ -1,6 +1,6 @@
 {
   "name": "sghi-commons",
-  "version": "1.5.1-rc.1",
+  "version": "1.5.1",
   "description": "Collection of utilities and reusable components used throughout our Python projects.",
   "directories": {
     "doc": "docs"
