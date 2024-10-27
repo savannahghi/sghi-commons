@@ -258,7 +258,8 @@ class TestsRetryOfExponentialBackoff(TestCase):
 
     def test_retry_side_effects_with_timeout_exceeded(self) -> None:
         """:meth:`~sghi.retry.Retry.of_exponential_backoff` instances should
-        raise the correct once a timeout is exceeded without a successful call.
+        raise :exc:`RetryError` once the retry timeout is exceeded without a
+        successful call.
         """
         instance: Retry = Retry.of_exponential_backoff(
             predicate=if_transient_exception,
@@ -267,22 +268,14 @@ class TestsRetryOfExponentialBackoff(TestCase):
             timeout=1,
         )
 
-        fail_count: int = 0
-
         @instance
-        def fail_thrice(val: int) -> int:
-            nonlocal fail_count
-            while fail_count < 3:
-                fail_count += 1
-                _err_msg: str = "Simulated error."
-                raise SGHITransientError(_err_msg)
-
-            return val
+        def fail_always() -> None:
+            _err_msg: str = "Simulated error."
+            raise SGHITransientError(_err_msg)
 
         with pytest.raises(RetryError) as exp_info:
-            fail_thrice(10)
+            fail_always()
 
         assert exp_info.value.cause.__class__ == SGHITransientError
         assert exp_info.value.message is not None
         assert exp_info.value.message.startswith("Timeout of 1.00s exceeded")
-        assert fail_count > 0
