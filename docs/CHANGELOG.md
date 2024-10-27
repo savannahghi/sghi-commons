@@ -1,3 +1,10 @@
+## [1.5.1-rc.1](https://github.com/savannahghi/sghi-commons/compare/v1.5.0...v1.5.1-rc.1) (2024-10-27)
+
+
+### Dependency Updates
+
+* **deps:** upgrade project dependencies ([f8eb43b](https://github.com/savannahghi/sghi-commons/commit/f8eb43bedacece8dfcee2981ac31b29882c0a6fa))
+
 ## [1.5.0](https://github.com/savannahghi/sghi-commons/compare/v1.4.0...v1.5.0) (2024-07-13)
 
 
